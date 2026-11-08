@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test de positionnement IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5F8;--surface:#FFFFFF;--field:#F7F9FB;--ink:#1C2433;--muted:#566174;--line:#DCE1E8;
+  --accent:#1F5FAD;--accent-ink:#FFFFFF;--accent-soft:#E7EEF8;
+  --ok:#1E7A46;--ok-soft:#E4F3EA;--warn:#A4410E;--warn-soft:#FBEDE4;--err:#B42318;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#12161D;--surface:#1A2029;--field:#151A22;--ink:#E7EBF1;--muted:#9DA7B5;--line:#2C3441;
+    --accent:#6EA8F0;--accent-ink:#0E1520;--accent-soft:#1D2B3D;
+    --ok:#5CC98A;--ok-soft:#163024;--warn:#F0A673;--warn-soft:#33241A;--err:#F28B82;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:44px 20px 72px}
+header{margin-bottom:28px}
+h1{font-size:30px;line-height:1.2;font-weight:600;margin:0;letter-spacing:-.01em}
+.intro{color:var(--muted);margin:12px 0 0;max-width:62ch;white-space:pre-line}
+h2{font-size:21px;line-height:1.35;font-weight:600;margin:0 0 18px}
+h3{font-size:17px;font-weight:600;margin:30px 0 12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:28px}
+@media (max-width:520px){.panel{padding:20px}.wrap{padding-top:28px}h1{font-size:25px}}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+
+/* Formulaire */
+.field{margin-bottom:20px}
+.lbl{display:block;font-weight:500;margin-bottom:6px}
+.req{color:var(--err)}
+.help{font-size:14px;color:var(--muted);margin:-2px 0 8px}
+input[type=text],input[type=email],input[type=number],select,textarea{
+  width:100%;font:inherit;color:inherit;background:var(--field);
+  border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
+.err-msg{color:var(--err);font-size:14px;margin-top:6px}
+
+/* Boutons */
+.btn{font:inherit;font-weight:500;border-radius:8px;padding:11px 20px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px}
+.actions.end{justify-content:flex-end}
+.send-err{color:var(--err);font-size:14px;margin-top:14px}
+
+/* Questions */
+.progress{margin-bottom:24px}
+.count{font-size:14px;color:var(--muted);margin-bottom:8px}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);transition:width .35s ease}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8px}
+.multi{font-size:14px;color:var(--muted);margin:0 0 16px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;
+  padding:12px 14px;cursor:pointer;background:var(--surface)}
+.opt:hover{border-color:var(--accent)}
+.opt input{margin:3px 0 0;width:18px;height:18px;flex:none;accent-color:var(--accent)}
+.opt input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.idk{border-style:dashed;color:var(--muted)}
+.opt.idk.on{color:var(--ink)}
+
+/* Bilan */
+.result-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;margin-bottom:22px}
+.score{font-size:60px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.score small{font-size:26px;font-weight:500;margin-left:2px}
+.lvl-name{font-size:20px;font-weight:600}
+.lvl-code{color:var(--muted)}
+.scale{display:grid;gap:4px;margin-bottom:6px}
+.scale span{height:10px;border-radius:3px;background:var(--line)}
+.scale span.past{background:var(--accent-soft)}
+.scale span.now{background:var(--accent)}
+.scale-labels{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.scale-labels b{color:var(--ink);font-weight:600}
+.axis{display:grid;grid-template-columns:minmax(0,1fr) 120px 44px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.axis:last-child{border-bottom:0}
+.axis .track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.axis .track i{display:block;height:100%;width:0;background:var(--accent);transition:width .6s ease}
+.axis .track i.hi{background:var(--ok)}
+.axis .track i.lo{background:var(--warn)}
+.axis .pct{text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.axis{grid-template-columns:minmax(0,1fr) 44px}.axis .track{grid-column:1 / -1;order:3}}
+.items{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.items li{border-radius:8px;padding:12px 14px}
+.items.good li{background:var(--ok-soft)}
+.items.todo li{background:var(--warn-soft)}
+.items .mod{display:block;font-size:14px;margin-top:2px}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:16px;font-size:14px;color:var(--muted)}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.linkbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fin{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);white-space:pre-line}
+.corr{border-top:1px solid var(--line);padding:14px 0}
+.corr p{margin:4px 0}
+.corr .verdict{font-weight:600}
+.corr .verdict.ok{color:var(--ok)}
+.corr .verdict.ko{color:var(--warn)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="titre">Test de positionnement IA</h1>
+    <p class="intro" id="intro" hidden></p>
+    <div class="topbar" id="session" hidden>
+      <span id="session-nom"></span>
+      <button type="button" class="linkbtn" id="deconnexion">Se déconnecter</button>
+    </div>
+  </header>
+  <main id="app" aria-live="polite"></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =====================================================================
+     1. CONFIGURATION – c’est la seule partie à modifier
+     ===================================================================== */
+
+  const CONFIG = {
+    // Lien prérempli du Google Form (voir le guide, étape 2)
+    lienPrerempli: "https://docs.google.com/forms/d/e/1FAIpQLSeHBd3q0deWjxoNHZeB4HtATbh7BXZS-6Bpd4pZqjiK53LrGg/viewform?usp=pp_url&entry.16379199=nom&entry.1870314045=prenom&entry.797201175=email&entry.1569993303=direction&entry.1000803792=poste&entry.43227533=usage_ia&entry.1036534124=score&entry.388129955=niveau&entry.2053463370=competences&entry.1288250710=points_forts&entry.1488665654=a_travailler&entry.1656505145=detail&entry.1752236776=duree&entry.49609095=identifiant",
+
+    titre: "Test de positionnement IA",
+    intro: "Ce test d’une quinzaine de minutes permet d’identifier votre niveau actuel en intelligence artificielle. Il n’y a pas de piège : si vous ne connaissez pas la réponse, choisissez « Je ne sais pas ».",
+    messageFin: "Merci pour votre participation. Ce bilan vous aide à repérer les modules sur lesquels vous concentrer pendant le parcours.",
+
+    melangerQuestions: false,   // true : ordre des questions aléatoire
+    melangerOptions: false,     // true : ordre des réponses aléatoire
+    jeNeSaisPas: true,          // true : ajoute la réponse « Je ne sais pas » (comptée fausse)
+    afficherCorrection: false,  // true : le candidat voit la correction à la fin
+    seuilFort: 70,              // % minimum pour un point fort
+    seuilFaible: 50             // % en dessous duquel une compétence est à travailler
+  };
+
+  // Comptes autorisés. Ne jamais écrire de mot de passe ici : seulement l’empreinte
+  // produite par le fichier generateur_empreintes.html (conservé sur votre poste).
+  const UTILISATEURS = [
+        { identifiant: "user1", empreinte: "75eebba184dac515a5e2dfb555ca2c9ca336dfbfd7bac6bd4f18a2a8c5f4e3ce" },
+    { identifiant: "user2", empreinte: "cd6e8b7616a88061b3be1bffa8aabc5360d946f0b9b4e7930b1ec7765536fa7f" },
+    { identifiant: "user3", empreinte: "b8a222c6a9b668a3f805fabce7131d119ed94c837ca70b8128af6f4e6504ace5" },
+    { identifiant: "user4", empreinte: "967db1c2257c804009ada919b538efe79cc4455e624631a88f3c8b77c6d34de0" },
+    { identifiant: "user5", empreinte: "0ede8935be01f40ac06b06dd665afea3592529393ead5381708c293cb388f229" },
+    { identifiant: "user6", empreinte: "b725fce849da01df9acf482969b5de585998a60019b5ebaffd3890377d79b3a5" },
+    { identifiant: "user7", empreinte: "d39c2bc853ca545d02f884f880a056dab7ec42842992865fedf2f7fa51085312" },
+    { identifiant: "user8", empreinte: "254a115c52ae2cfa6d6870a06ea096b9f51e93f28d3ad87e0c9055aefd34eee1" },
+    { identifiant: "user9", empreinte: "bd805941e0048a8128620da9eebf879501228aa80f06880f362bb3269e3b69c2" },
+    { identifiant: "user10", empreinte: "48446e4a8c077ed28f53deee9a400b1b10041a217d00e3655a256a46e56f3254" },
+    { identifiant: "user11", empreinte: "4a63df9f7fb7ae41a974b1d17d5475af69afab13b1813337eb2a4c0d0b1c841a" },
+    { identifiant: "user12", empreinte: "d9d07c3bf4e9c6732fab118efdf5069be72d4870c811ee3613881cb383a044f8" },
+    { identifiant: "user13", empreinte: "8c4d3ac9f75adf995c1227b17e8d80f57809648a316dffa9a1e6026f98b1ec1a" },
+    { identifiant: "user14", empreinte: "e3af8c7a91fd1ecdbcdd54a8512b9882496ba8fa35a91766d2a92476d3c1a546" },
+    { identifiant: "user15", empreinte: "88880b3d45e94001cdaa191fb07e38d9f0d4713c2549dad09640eb4b6bad4e7a" },
+    { identifiant: "user16", empreinte: "3e4ef3c272a2bae3e95c6420324588dee969a45531ec550a08c3470d0d9895aa" },
+    { identifiant: "user17", empreinte: "9f5aa139121374bfeb384f48984a6a3a915a56af920994e6b47b091fee0dcf2e" },
+    { identifiant: "user18", empreinte: "03cf01d67251435002f6e929118bd9a032f19ebd335e4dc3ca5fab4aa64a7961" },
+    { identifiant: "user19", empreinte: "319822b45793dbc446e46c96094d0df4b8f2b44d6a457e92ec4458fca47173c7" },
+    { identifiant: "user20", empreinte: "9afb596775fc5bd0c284a379b5c26d128394587a2b0b5239b1f6508344811745" },
+    { identifiant: "user21", empreinte: "285ae0a83e93989004d8d6e56199a97b67862506eeaac3b28d722ecf2d62be23" },
+    { identifiant: "user22", empreinte: "37489fc93de9a6834dc716e13ac7769ceba5919a5a39fff1ba615f06d69be561" },
+    { identifiant: "user23", empreinte: "949d4311df77aeef8e28236b822472269ed6f387896ac020d36ec0c2e414f811" },
+    { identifiant: "user24", empreinte: "76998b5292883f1634f219178d39030f15193fcbd8f2b092395079f29947ea49" },
+    { identifiant: "user25", empreinte: "fa6e47147e6da35b2b434f3bcc1f3ab72651189f7ac91578437f21a1ebdbac78" },
+    { identifiant: "user26", empreinte: "5b9b07bcc7759db02966314d2f59105a61993e81f0547620e32cb2cfe0aa3499" },
+    { identifiant: "user27", empreinte: "03c881f7dbf183bdf87b9ec7786dda4b14a905483be936e8ad9b6018872f64f7" },
+    { identifiant: "user28", empreinte: "d9a91dc6aa3e87f198f11de978937d95dabfa6b8f622d14221bbe2d2efe8371c" },
+    { identifiant: "user29", empreinte: "bac93af1d918c0a456215aa6df0386f84eb83e53a52385cdaeda098339a3754e" },
+    { identifiant: "user30", empreinte: "1fe65aef7a50fcf97d025d0362521eb88f9706a86578bdb146cde076b028dd44" },
+    { identifiant: "user31", empreinte: "e3dddde89597f6b4369a61de2f028bcc25ea84055e1904aff1d29e40262035d2" },
+    { identifiant: "user32", empreinte: "557f85550315ae21d7070cc6b9d0ac8d31341134d5f1158ef585391c079faeb9" },
+    { identifiant: "user33", empreinte: "88b40a528521d648c259332cd5cf003f3d3761712ba7c8c3608cdaa5b2f6480d" },
+    { identifiant: "user34", empreinte: "4775bed3700febb7cba1b2cf978afbf9f104a9ce33a11a23c5a7adee6430a6b8" },
+    { identifiant: "user35", empreinte: "ca32f56f28f79e81e715ca27b285085ed384024bece2ed1b94031bf7b93bfa2c" }
+  ];
+
+  // Informations demandées au candidat.
+  // type : "texte", "email", "liste", "nombre" ou "texte_long"
+  const CHAMPS = [
+    { id: "nom", libelle: "Nom", type: "texte", obligatoire: true },
+    { id: "prenom", libelle: "Prénom", type: "texte", obligatoire: true },
+    { id: "email", libelle: "Adresse mail professionnelle", type: "email", obligatoire: true },
+    { id: "direction", libelle: "Direction", type: "liste", obligatoire: true, options: ["Juridique", "Audit", "Finance", "Autre"] },
+    { id: "poste", libelle: "Poste", type: "texte", obligatoire: false },
+    { id: "usage_ia", libelle: "À quelle fréquence utilisez-vous un outil d’IA ?", type: "liste", obligatoire: true, options: ["Jamais", "Occasionnellement", "Chaque semaine", "Tous les jours"] }
+  ];
+
+  // Compétences évaluées et module conseillé quand le score est faible
+  const COMPETENCES = [
+    { code: "cult", libelle: "Culture et compréhension de l’IA", module: "Tronc commun : comprendre l’IA" },
+    { code: "prat", libelle: "Pratique des outils au quotidien", module: "Atelier : les outils au quotidien" },
+    { code: "prom", libelle: "Ingénierie du prompt", module: "Atelier : rédiger une demande efficace" },
+    { code: "crit", libelle: "Esprit critique et vérification", module: "Atelier : vérifier les résultats de l’IA" },
+    { code: "secu", libelle: "Sécurité et conformité", module: "Module : sécurité et conformité" },
+    { code: "meti", libelle: "Application au métier", module: "Module de votre direction" }
+  ];
+
+  // Paliers de niveau selon le score global (%)
+  const NIVEAUX = [
+    { min: 0, code: "N0", nom: "Découverte" },
+    { min: 26, code: "N1", nom: "Initié" },
+    { min: 46, code: "N2", nom: "Praticien" },
+    { min: 66, code: "N3", nom: "Autonome" },
+    { min: 86, code: "N4", nom: "Référent" }
+  ];
+
+  // Questions. type : "unique" ou "multiple".
+  // bonnes : lettre(s) des bonnes réponses, dans l’ordre des options (A = 1re option).
+  const QUESTIONS = [
+    { id: "Q01", competence: "cult", type: "unique",
+      question: "Un assistant IA vous répond. Sur quoi s’appuie-t-il, pour l’essentiel ?",
+      options: ["Il retrouve la bonne réponse dans une base de réponses validées",
+                "Il prédit la suite la plus probable du texte, mot après mot",
+                "Il applique des règles logiques écrites par ses concepteurs",
+                "Il interroge Internet en temps réel à chaque demande"],
+      bonnes: "B",
+      explication: "Un modèle de langage compose, mot après mot, la suite la plus probable. Sa fluidité comme ses erreurs en découlent." },
+
+    { id: "Q02", competence: "cult", type: "unique",
+      question: "Vous posez deux fois la même question à quelques minutes d’écart. Les réponses diffèrent. Que se passe-t-il ?",
+      options: ["Un dysfonctionnement à signaler au support",
+                "L’outil a appris quelque chose entre les deux",
+                "C’est normal : la génération comporte une part d’aléatoire",
+                "La seconde réponse est forcément la meilleure"],
+      bonnes: "C",
+      explication: "La variabilité est une propriété du modèle : un résultat obtenu une fois n’est pas reproductible à l’identique." },
+
+    { id: "Q03", competence: "prat", type: "unique",
+      question: "Vous voulez faire résumer un long document. Quelle demande donnera le meilleur résultat ?",
+      options: ["Joindre le document et écrire « résume »",
+                "Joindre le document en précisant le destinataire, la longueur et les points à faire ressortir",
+                "Demander à l’IA de trouver le document sur Internet",
+                "Résumer soi-même puis demander à l’IA de valider"],
+      bonnes: "B",
+      explication: "Le destinataire, la longueur et les points attendus orientent le résumé vers un résultat directement exploitable." },
+
+    { id: "Q04", competence: "prat", type: "unique",
+      question: "Dans un environnement d’entreprise, un assistant IA intégré (Copilot, Gemini…) peut accéder :",
+      options: ["À tous les fichiers de l’entreprise, sans restriction",
+                "Uniquement aux documents ouverts pendant la session",
+                "Aux contenus auxquels votre compte a déjà accès, selon vos droits",
+                "À rien d’autre que ce que vous tapez dans la conversation"],
+      bonnes: "C",
+      explication: "L’assistant hérite des droits de votre compte : il ne les élargit pas." },
+
+    { id: "Q05", competence: "prom", type: "unique",
+      question: "Quelle formulation réduit le plus le risque que l’IA invente une information ?",
+      options: ["« Sois précis et rigoureux »",
+                "« Réponds uniquement à partir du document joint, et écris “non trouvé” si l’information n’y figure pas »",
+                "« Surtout, ne te trompe pas »",
+                "« Donne-moi la vérité exacte »"],
+      bonnes: "B",
+      explication: "Ce qui fonctionne : restreindre la source et prévoir explicitement le cas où l’information manque." },
+
+    { id: "Q06", competence: "prom", type: "multiple",
+      question: "Quels éléments rendent une demande à l’IA plus efficace ?",
+      options: ["Préciser le rôle que l’IA doit adopter",
+                "Décrire le format attendu (tableau, nombre de points…)",
+                "Écrire en majuscules pour insister",
+                "Donner le contexte et le destinataire du résultat",
+                "Ajouter des formules de politesse"],
+      bonnes: "A,B,D",
+      explication: "Rôle, contexte et format structurent la demande. Les majuscules et la politesse ne changent pas la qualité du résultat." },
+
+    { id: "Q07", competence: "crit", type: "unique",
+      question: "Parmi ces tâches, laquelle un assistant IA généraliste réussit-il le moins bien ?",
+      options: ["Résumer un document de quarante pages",
+                "Réécrire un texte pour un autre destinataire",
+                "Additionner huit cents montants et garantir le total au centime",
+                "Proposer le plan d’une note de synthèse"],
+      bonnes: "C",
+      explication: "Le calcul exact sur un grand volume n’est pas garanti par un modèle de langage : utilisez un tableur." },
+
+    { id: "Q08", competence: "crit", type: "unique",
+      question: "L’IA cite un chiffre précis et une source à l’appui de sa réponse. Votre premier réflexe ?",
+      options: ["L’utiliser : une source est citée",
+                "Vérifier le chiffre dans la source d’origine avant tout usage",
+                "Demander à l’IA si elle est sûre d’elle",
+                "Reposer la question pour comparer"],
+      bonnes: "B",
+      explication: "Les sources et chiffres inventés ont l’apparence exacte d’une information authentique : seule la source d’origine fait foi." },
+
+    { id: "Q09", competence: "secu", type: "unique",
+      question: "Un document produit avec l’aide de l’IA, puis signé par vous, engage :",
+      options: ["L’éditeur de l’outil",
+                "Personne : c’est une production automatique",
+                "Vous et votre entreprise, comme tout document que vous signez",
+                "La direction informatique"],
+      bonnes: "C",
+      explication: "La responsabilité ne se délègue pas à un outil : c’est le principe de l’humain dans la boucle." },
+
+    { id: "Q10", competence: "secu", type: "unique",
+      question: "Vous devez analyser un document contenant des données confidentielles. Quel est le bon réflexe ?",
+      options: ["Le coller dans un outil public gratuit, c’est plus rapide",
+                "Utiliser l’outil validé par l’entreprise et respecter les règles internes",
+                "Le retaper en retirant quelques noms",
+                "Le transmettre à un collègue mieux équipé"],
+      bonnes: "B",
+      explication: "Le choix de l’outil précède le choix de la méthode : un bon prompt dans le mauvais outil reste une faute." },
+
+    { id: "Q11", competence: "meti", type: "unique",
+      question: "Pour transformer un compte rendu de réunion en liste d’actions exploitable, que faut-il préciser à l’IA ?",
+      options: ["Simplement « résume ce compte rendu »",
+                "Les colonnes attendues : action, responsable, échéance",
+                "Le nombre de participants",
+                "La durée de la réunion"],
+      bonnes: "B",
+      explication: "Un résumé produit du texte ; une liste d’actions exige une structure définie à l’avance." },
+
+    { id: "Q12", competence: "meti", type: "unique",
+      question: "Quel est le principal risque d’un usage non encadré de l’IA dans votre métier ?",
+      options: ["Un gain de temps décevant",
+                "Une analyse fausse mais convaincante, utilisée sans vérification",
+                "Le coût des licences",
+                "La résistance des équipes au changement"],
+      bonnes: "B",
+      explication: "Le danger n’est pas l’échec visible de l’outil, mais un résultat erroné bien rédigé qui passe les relectures." }
+  ];
+
+  /* =====================================================================
+     2. FONCTIONNEMENT – rien à modifier en dessous
+     ===================================================================== */
+
+  const LETTRES = "ABCDEF";
+  const app = document.getElementById("app");
+  const introEl = document.getElementById("intro");
+  let formulaire = null;
+  let utilisateur = null;
+  const CLE_SESSION = "t0.session";
+  const cleIdentite = id => "t0.identite." + id;
+  let identite = {};
+  let ordre = [];
+  let reponses = {};
+  let idx = 0;
+  let debut = 0;
+  let enCours = false;
+  let envoiEnCours = false;
+
+  function el(tag, cls, txt) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt != null) n.textContent = txt;
+    return n;
+  }
+  function vider() { app.innerHTML = ""; window.scrollTo(0, 0); }
+  function normaliser(s) {
+    return String(s == null ? "" : s).trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  }
+  function melanger(a) {
+    a = a.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function afficherIntro(visible) { introEl.hidden = !(visible && CONFIG.intro); }
+
+  function message(titre, texte) {
+    vider();
+    const p = el("div", "panel");
+    p.appendChild(el("h2", null, titre));
+    if (texte) p.appendChild(el("p", "muted", texte));
+    app.appendChild(p);
+  }
+
+  /** Transforme le lien prérempli en adresse d’envoi + correspondance mot-clé -> entry.XXX */
+  function lireFormulaire(lien) {
+    try {
+      const u = new URL(lien);
+      if (u.hostname !== "docs.google.com" || !/\/viewform$/.test(u.pathname)) return null;
+      const map = {};
+      u.searchParams.forEach((v, k) => { if (/^entry\.\d+$/.test(k)) map[normaliser(v)] = k; });
+      if (!Object.keys(map).length) return null;
+      return { action: u.origin + u.pathname.replace(/\/viewform$/, "/formResponse"), map: map };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /* ---------- Démarrage ---------- */
+  function initialiser() {
+    document.title = CONFIG.titre;
+    document.getElementById("titre").textContent = CONFIG.titre;
+    introEl.textContent = CONFIG.intro;
+    formulaire = lireFormulaire(CONFIG.lienPrerempli);
+    if (!formulaire) {
+      message("Configuration incomplète", "Collez le lien prérempli de votre Google Form dans CONFIG.lienPrerempli, en haut du script de index.html.");
+      return;
+    }
+    const valides = UTILISATEURS.filter(u => /^[a-f0-9]{64}$/.test(String(u.empreinte)));
+    if (!valides.length) {
+      message("Configuration incomplète", "Ajoutez au moins un compte dans UTILISATEURS, avec l’empreinte produite par generateur_empreintes.html.");
+      return;
+    }
+    document.getElementById("deconnexion").addEventListener("click", deconnecter);
+    let enregistre = null;
+    try { enregistre = sessionStorage.getItem(CLE_SESSION); } catch (e) { /* stockage indisponible */ }
+    if (enregistre && UTILISATEURS.some(u => u.identifiant.toLowerCase() === enregistre)) {
+      ouvrirSession(enregistre);
+    } else {
+      ecranConnexion();
+    }
+  }
+
+  /* ---------- Connexion ---------- */
+  function empreinte(identifiant, motDePasse) {
+    const octets = new TextEncoder().encode("t0|" + identifiant + "|" + motDePasse);
+    return crypto.subtle.digest("SHA-256", octets).then(h =>
+      Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join(""));
+  }
+
+  function ecranConnexion() {
+    vider();
+    afficherIntro(true);
+    afficherSession();
+    const form = el("form", "panel");
+    form.noValidate = true;
+    form.appendChild(el("h2", null, "Connexion"));
+
+    const champs = [
+      { id: "login_id", libelle: "Identifiant", type: "text", auto: "username" },
+      { id: "login_mdp", libelle: "Mot de passe", type: "password", auto: "current-password" }
+    ];
+    champs.forEach(c => {
+      const f = el("div", "field");
+      const lb = el("label", "lbl", c.libelle);
+      lb.htmlFor = c.id;
+      const input = el("input");
+      input.type = c.type;
+      input.id = c.id;
+      input.autocomplete = c.auto;
+      f.appendChild(lb);
+      f.appendChild(input);
+      form.appendChild(f);
+    });
+    const err = el("p", "err-msg");
+    err.hidden = true;
+    err.setAttribute("role", "alert");
+    form.appendChild(err);
+
+    const a = el("div", "actions end");
+    const b = el("button", "btn", "Se connecter");
+    b.type = "submit";
+    a.appendChild(b);
+    form.appendChild(a);
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const id = form.querySelector("#login_id").value.trim().toLowerCase();
+      const mdp = form.querySelector("#login_mdp").value;
+      if (!id || !mdp) {
+        err.textContent = "Saisissez votre identifiant et votre mot de passe.";
+        err.hidden = false;
+        return;
+      }
+      b.disabled = true;
+      empreinte(id, mdp).then(h => {
+        const compte = UTILISATEURS.find(u => u.identifiant.toLowerCase() === id && u.empreinte === h);
+        if (!compte) {
+          b.disabled = false;
+          err.textContent = "Identifiant ou mot de passe incorrect.";
+          err.hidden = false;
+          form.querySelector("#login_mdp").value = "";
+          form.querySelector("#login_mdp").focus();
+          return;
+        }
+        try { sessionStorage.setItem(CLE_SESSION, id); } catch (e2) { /* stockage indisponible */ }
+        ouvrirSession(id);
+      }).catch(() => {
+        b.disabled = false;
+        err.textContent = "La connexion n’a pas pu être vérifiée. Ouvrez le test depuis son lien https, puis réessayez.";
+        err.hidden = false;
+      });
+    });
+    app.appendChild(form);
+    form.querySelector("#login_id").focus();
+  }
+
+  function afficherSession() {
+    const bar = document.getElementById("session");
+    bar.hidden = !utilisateur;
+    document.getElementById("session-nom").textContent = utilisateur ? "Connecté en tant que " + utilisateur : "";
+  }
+
+  function deconnecter() {
+    if (enCours && !window.confirm("Votre test en cours sera perdu. Voulez-vous vraiment vous déconnecter ?")) return;
+    try { sessionStorage.removeItem(CLE_SESSION); } catch (e) { /* stockage indisponible */ }
+    utilisateur = null;
+    identite = {};
+    reponses = {};
+    enCours = false;
+    ecranConnexion();
+  }
+
+  function ouvrirSession(id) {
+    utilisateur = id;
+    identite = {};
+    try {
+      const sauve = JSON.parse(localStorage.getItem(cleIdentite(id)) || "null");
+      if (sauve && typeof sauve === "object") identite = sauve;
+    } catch (e) { /* stockage indisponible */ }
+    afficherSession();
+    ecranIdentite();
+  }
+
+  /* ---------- Écran 1 : informations du candidat ---------- */
+  function ecranIdentite() {
+    vider();
+    afficherIntro(true);
+    const form = el("form", "panel");
+    form.noValidate = true;
+    form.appendChild(el("h2", null, "Vos informations"));
+
+    CHAMPS.forEach(c => {
+      const f = el("div", "field");
+      f.dataset.id = c.id;
+      const id = "champ_" + c.id;
+      const lb = el("label", "lbl", c.libelle);
+      lb.htmlFor = id;
+      if (c.obligatoire) {
+        const s = el("span", "req", " *");
+        s.setAttribute("aria-hidden", "true");
+        lb.appendChild(s);
+      }
+      f.appendChild(lb);
+      if (c.aide) f.appendChild(el("p", "help", c.aide));
+
+      let input;
+      if (c.type === "liste") {
+        input = el("select");
+        const vide = el("option", null, "Choisir…");
+        vide.value = "";
+        input.appendChild(vide);
+        (c.options || []).forEach(o => { const op = el("option", null, o); op.value = o; input.appendChild(op); });
+      } else if (c.type === "texte_long") {
+        input = el("textarea");
+      } else {
+        input = el("input");
+        input.type = c.type === "email" ? "email" : c.type === "nombre" ? "number" : "text";
+        if (c.type === "email") input.autocomplete = "email";
+      }
+      input.id = id;
+      input.name = c.id;
+      if (c.obligatoire) input.setAttribute("aria-required", "true");
+      input.value = identite[c.id] || "";
+      f.appendChild(input);
+      form.appendChild(f);
+    });
+
+    const a = el("div", "actions end");
+    const b = el("button", "btn", "Commencer le test");
+    b.type = "submit";
+    a.appendChild(b);
+    form.appendChild(a);
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      if (validerIdentite(form)) demarrer();
+    });
+    app.appendChild(form);
+  }
+
+  function validerIdentite(form) {
+    let premier = null;
+    const valeurs = {};
+    CHAMPS.forEach(c => {
+      const f = form.querySelector('.field[data-id="' + c.id + '"]');
+      const input = f.querySelector("input,select,textarea");
+      const ancien = f.querySelector(".err-msg");
+      if (ancien) ancien.remove();
+      f.classList.remove("invalid");
+      input.removeAttribute("aria-invalid");
+
+      const v = input.value.trim().slice(0, 500);
+      let erreur = "";
+      if (c.obligatoire && !v) erreur = "Ce champ est obligatoire.";
+      else if (c.type === "email" && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) erreur = "Saisissez une adresse mail valide, par exemple prenom.nom@entreprise.com.";
+      if (erreur) {
+        f.classList.add("invalid");
+        input.setAttribute("aria-invalid", "true");
+        const m = el("p", "err-msg", erreur);
+        m.id = input.id + "_err";
+        input.setAttribute("aria-describedby", m.id);
+        f.appendChild(m);
+        if (!premier) premier = input;
+      }
+      valeurs[c.id] = c.type === "email" ? v.toLowerCase() : v;
+    });
+    if (premier) { premier.focus(); return false; }
+    identite = valeurs;
+    try { localStorage.setItem(cleIdentite(utilisateur), JSON.stringify(valeurs)); } catch (e) { /* stockage indisponible */ }
+    return true;
+  }
+
+  function demarrer() {
+    const base = QUESTIONS.map(q => ({
+      id: q.id,
+      type: q.type === "multiple" ? "multiple" : "unique",
+      question: q.question,
+      options: q.options.slice(0, LETTRES.length).map((t, i) => ({ lettre: LETTRES[i], texte: t }))
+    }));
+    ordre = (CONFIG.melangerQuestions ? melanger(base) : base).map(q => {
+      if (CONFIG.melangerOptions) q.options = melanger(q.options);
+      return q;
+    });
+    reponses = {};
+    idx = 0;
+    debut = Date.now();
+    enCours = true;
+    ecranQuestion();
+  }
+
+  /* ---------- Écran 2 : les questions ---------- */
+  function ecranQuestion() {
+    vider();
+    afficherIntro(false);
+    const q = ordre[idx];
+    const n = ordre.length;
+    const p = el("div", "panel");
+
+    const pr = el("div", "progress");
+    pr.appendChild(el("div", "count", "Question " + (idx + 1) + " sur " + n));
+    const bar = el("div", "bar");
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-valuemin", "0");
+    bar.setAttribute("aria-valuemax", String(n));
+    bar.setAttribute("aria-valuenow", String(idx + 1));
+    const fill = el("i");
+    fill.style.width = (idx / n * 100) + "%";
+    bar.appendChild(fill);
+    pr.appendChild(bar);
+    p.appendChild(pr);
+
+    const fs = el("fieldset");
+    fs.appendChild(el("legend", null, q.question));
+    if (q.type === "multiple") fs.appendChild(el("p", "multi", "Plusieurs réponses possibles."));
+    const opts = el("div", "opts");
+    const type = q.type === "multiple" ? "checkbox" : "radio";
+    const liste = q.options.map(o => ({ valeur: o.lettre, texte: o.texte, idk: false }));
+    if (CONFIG.jeNeSaisPas) liste.push({ valeur: "?", texte: "Je ne sais pas", idk: true });
+
+    const labels = [];
+    liste.forEach(o => {
+      const lb = el("label", "opt" + (o.idk ? " idk" : ""));
+      const inp = el("input");
+      inp.type = type;
+      inp.name = "q";
+      inp.value = o.valeur;
+      lb.appendChild(inp);
+      lb.appendChild(el("span", null, o.texte));
+      opts.appendChild(lb);
+      labels.push({ lb, inp });
+    });
+    fs.appendChild(opts);
+    p.appendChild(fs);
+
+    const a = el("div", "actions");
+    const prec = el("button", "btn ghost", "Précédent");
+    prec.type = "button";
+    prec.disabled = idx === 0;
+    prec.addEventListener("click", () => { idx--; ecranQuestion(); });
+    const dernier = idx === n - 1;
+    const suiv = el("button", "btn", dernier ? "Envoyer mes réponses" : "Question suivante");
+    suiv.type = "button";
+    a.appendChild(prec);
+    a.appendChild(suiv);
+    p.appendChild(a);
+    const err = el("p", "send-err");
+    err.hidden = true;
+    p.appendChild(err);
+
+    function synchroniser() {
+      const sel = reponses[q.id] || [];
+      labels.forEach(({ lb, inp }) => {
+        inp.checked = sel.indexOf(inp.value) !== -1;
+        lb.classList.toggle("on", inp.checked);
+      });
+      suiv.disabled = sel.length === 0;
+    }
+    labels.forEach(({ inp }) => {
+      inp.addEventListener("change", () => {
+        let sel = reponses[q.id] || [];
+        if (type === "radio" || inp.value === "?") {
+          sel = inp.checked ? [inp.value] : [];
+        } else {
+          sel = sel.filter(v => v !== "?");
+          if (inp.checked) { if (sel.indexOf(inp.value) === -1) sel.push(inp.value); }
+          else sel = sel.filter(v => v !== inp.value);
+        }
+        reponses[q.id] = sel;
+        synchroniser();
+      });
+    });
+    synchroniser();
+
+    suiv.addEventListener("click", () => {
+      if (!dernier) { idx++; ecranQuestion(); return; }
+      envoyer(suiv, err);
+    });
+
+    app.appendChild(p);
+    requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = ((idx + 1) / n * 100) + "%"; }));
+  }
+
+  /* ---------- Correction ---------- */
+  function corriger() {
+    const parComp = {};
+    let obtenu = 0;
+    let total = 0;
+    const detail = [];
+    const correction = [];
+
+    QUESTIONS.forEach(q => {
+      const options = q.options.slice(0, LETTRES.length);
+      const valides = options.map((t, i) => LETTRES[i]);
+      const texte = l => { const i = LETTRES.indexOf(l); return options[i] != null ? l + ". " + options[i] : l; };
+      let rep = (reponses[q.id] || []).slice();
+      const nsp = rep.indexOf("?") !== -1;
+      rep = rep.filter((x, i, arr) => valides.indexOf(x) !== -1 && arr.indexOf(x) === i).sort();
+      if (q.type !== "multiple") rep = rep.slice(0, 1);
+      const bonnes = String(q.bonnes || "").toUpperCase().split(/[^A-F]+/).filter(Boolean).sort();
+      const juste = rep.length > 0 && rep.length === bonnes.length && rep.every((x, k) => x === bonnes[k]);
+
+      const c = q.competence || "general";
+      if (!parComp[c]) parComp[c] = { obtenu: 0, total: 0 };
+      parComp[c].total += 1;
+      total += 1;
+      if (juste) { parComp[c].obtenu += 1; obtenu += 1; }
+
+      detail.push(q.id + " : " + (rep.length ? rep.join(",") : nsp ? "Je ne sais pas" : "Sans réponse") + (juste ? " ✓" : " ✗"));
+      correction.push({
+        question: q.question,
+        juste: juste,
+        votre: rep.length ? rep.map(texte) : [nsp ? "Je ne sais pas" : "Sans réponse"],
+        bonnes: bonnes.map(texte),
+        explication: q.explication || ""
+      });
+    });
+
+    const pct = (o, t) => t ? Math.round(100 * o / t) : 0;
+    const codes = COMPETENCES.map(c => c.code);
+    const ordreComp = codes.concat(Object.keys(parComp).filter(k => codes.indexOf(k) === -1));
+    const axes = ordreComp.filter(k => parComp[k]).map(k => {
+      const c = COMPETENCES.find(x => x.code === k) || { libelle: k, module: "" };
+      return { code: k, libelle: c.libelle, module: c.module, score: pct(parComp[k].obtenu, parComp[k].total) };
+    });
+    const score = pct(obtenu, total);
+    let niveau = NIVEAUX[0];
+    NIVEAUX.forEach(x => { if (score >= x.min) niveau = x; });
+
+    return {
+      score: score,
+      niveau: niveau,
+      axes: axes,
+      forces: axes.filter(a => a.score >= CONFIG.seuilFort).sort((a, b) => b.score - a.score),
+      faiblesses: axes.filter(a => a.score < CONFIG.seuilFaible).sort((a, b) => a.score - b.score),
+      detail: detail,
+      correction: correction,
+      duree: Math.round((Date.now() - debut) / 6000) / 10
+    };
+  }
+
+  /* ---------- Envoi vers le Google Form ---------- */
+  function envoyer(btn, err) {
+    if (envoiEnCours) return;
+    envoiEnCours = true;
+    btn.disabled = true;
+    btn.textContent = "Envoi en cours…";
+    err.hidden = true;
+
+    const r = corriger();
+    const valeurs = Object.assign({}, identite, {
+      score: r.score,
+      niveau: r.niveau.code + " – " + r.niveau.nom,
+      competences: r.axes.map(a => a.libelle + " : " + a.score + " %").join(" | "),
+      points_forts: r.forces.map(a => a.libelle).join(", "),
+      a_travailler: r.faiblesses.map(a => a.libelle).join(", "),
+      detail: r.detail.join(" | "),
+      duree: r.duree
+    });
+    r.axes.forEach(a => { valeurs[a.code] = a.score; });
+    valeurs.identifiant = utilisateur;
+
+    const data = new URLSearchParams();
+    Object.keys(valeurs).forEach(k => {
+      const entry = formulaire.map[normaliser(k)];
+      if (entry) data.append(entry, String(valeurs[k]));
+    });
+
+    fetch(formulaire.action, { method: "POST", mode: "no-cors", body: data })
+      .then(() => {
+        envoiEnCours = false;
+        enCours = false;
+        ecranBilan(r);
+      })
+      .catch(() => {
+        envoiEnCours = false;
+        btn.disabled = false;
+        btn.textContent = "Envoyer mes réponses";
+        err.textContent = "L’envoi a échoué. Vos réponses sont conservées sur cette page : vérifiez votre connexion internet, puis cliquez de nouveau sur « Envoyer mes réponses ».";
+        err.hidden = false;
+      });
+  }
+
+  /* ---------- Écran 3 : le bilan ---------- */
+  function ecranBilan(r) {
+    vider();
+    afficherIntro(false);
+    const p = el("div", "panel");
+    p.appendChild(el("h2", null, "Votre bilan" + (identite.prenom ? ", " + identite.prenom : "")));
+
+    const head = el("div", "result-head");
+    const sc = el("div", "score", String(r.score));
+    sc.appendChild(el("small", null, "%"));
+    head.appendChild(sc);
+    const lv = el("div");
+    lv.appendChild(el("div", "lvl-name", r.niveau.nom));
+    lv.appendChild(el("div", "lvl-code", "Niveau " + r.niveau.code));
+    head.appendChild(lv);
+    p.appendChild(head);
+
+    const pos = NIVEAUX.indexOf(r.niveau);
+    const cols = "repeat(" + NIVEAUX.length + ",1fr)";
+    const scale = el("div", "scale");
+    scale.style.gridTemplateColumns = cols;
+    scale.setAttribute("aria-hidden", "true");
+    const labels = el("div", "scale-labels");
+    labels.style.gridTemplateColumns = cols;
+    NIVEAUX.forEach((x, i) => {
+      scale.appendChild(el("span", i === pos ? "now" : i < pos ? "past" : ""));
+      labels.appendChild(el(i === pos ? "b" : "span", null, x.nom));
+    });
+    p.appendChild(scale);
+    p.appendChild(labels);
+
+    p.appendChild(el("h3", null, "Résultats par compétence"));
+    const fills = [];
+    r.axes.forEach(a => {
+      const row = el("div", "axis");
+      row.appendChild(el("div", null, a.libelle));
+      const tr = el("div", "track");
+      const f = el("i", a.score >= CONFIG.seuilFort ? "hi" : a.score < CONFIG.seuilFaible ? "lo" : "");
+      tr.appendChild(f);
+      row.appendChild(tr);
+      row.appendChild(el("div", "pct", a.score + " %"));
+      p.appendChild(row);
+      fills.push([f, a.score]);
+    });
+
+    p.appendChild(el("h3", null, "Vos points forts"));
+    if (r.forces.length) {
+      const ul = el("ul", "items good");
+      r.forces.forEach(a => ul.appendChild(el("li", null, a.libelle + " (" + a.score + " %)")));
+      p.appendChild(ul);
+    } else {
+      p.appendChild(el("p", "muted", "Aucune compétence n’atteint encore " + CONFIG.seuilFort + " %. Le parcours vous aidera à progresser sur chacune d’elles."));
+    }
+
+    p.appendChild(el("h3", null, "À travailler en priorité"));
+    if (r.faiblesses.length) {
+      const ul = el("ul", "items todo");
+      r.faiblesses.forEach(a => {
+        const li = el("li", null, a.libelle + " (" + a.score + " %)");
+        if (a.module) li.appendChild(el("span", "mod", "Module conseillé : " + a.module));
+        ul.appendChild(li);
+      });
+      p.appendChild(ul);
+    } else {
+      p.appendChild(el("p", "muted", "Aucune compétence n’est en dessous du seuil. Vous pouvez suivre le parcours selon vos priorités."));
+    }
+
+    if (CONFIG.afficherCorrection) {
+      p.appendChild(el("h3", null, "Correction"));
+      r.correction.forEach((c, i) => {
+        const d = el("div", "corr");
+        d.appendChild(el("p", null, (i + 1) + ". " + c.question));
+        d.appendChild(el("p", "verdict " + (c.juste ? "ok" : "ko"), c.juste ? "Bonne réponse" : "Réponse incorrecte"));
+        d.appendChild(el("p", "muted", "Votre réponse : " + c.votre.join(" ; ")));
+        if (!c.juste) d.appendChild(el("p", "muted", "Réponse attendue : " + c.bonnes.join(" ; ")));
+        if (c.explication) d.appendChild(el("p", null, c.explication));
+        p.appendChild(d);
+      });
+    }
+
+    if (CONFIG.messageFin) p.appendChild(el("p", "fin", CONFIG.messageFin));
+
+    app.appendChild(p);
+    requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach(([f, s]) => { f.style.width = s + "%"; })));
+  }
+
+  window.addEventListener("beforeunload", e => {
+    if (enCours) { e.preventDefault(); e.returnValue = ""; }
+  });
+
+  initialiser();
+})();
+</script>
+</body>
+</html>
