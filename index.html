@@ -9,30 +9,42 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#F3F5F8;--surface:#FFFFFF;--field:#F7F9FB;--ink:#1C2433;--muted:#566174;--line:#DCE1E8;
-  --accent:#1F5FAD;--accent-ink:#FFFFFF;--accent-soft:#E7EEF8;
-  --ok:#1E7A46;--ok-soft:#E4F3EA;--warn:#A4410E;--warn-soft:#FBEDE4;--err:#B42318;
+  /* Charte BASSETTI : orange EC6408, anthracite 423435 */
+  --bg:#F1EFEE;--surface:#FFFFFF;--field:#FAF8F7;--ink:#423435;--muted:#646363;--line:#DED7D5;
+  --accent:#EC6408;--accent-ink:#FFFFFF;--accent-soft:#FDF0E4;--accent-mid:#F6AD83;
+  --ok:#EC6408;--ok-soft:#FDF0E4;--warn:#878786;--warn-soft:#F2EFEE;--err:#B3261E;
+  --brand:#423435;--radius:5px;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#12161D;--surface:#1A2029;--field:#151A22;--ink:#E7EBF1;--muted:#9DA7B5;--line:#2C3441;
-    --accent:#6EA8F0;--accent-ink:#0E1520;--accent-soft:#1D2B3D;
-    --ok:#5CC98A;--ok-soft:#163024;--warn:#F0A673;--warn-soft:#33241A;--err:#F28B82;
+    --bg:#191415;--surface:#241E1F;--field:#1E1819;--ink:#F1EDEB;--muted:#A99E9C;--line:#3B3233;
+    --accent:#FF7A1F;--accent-ink:#2A2223;--accent-soft:#3A2A1E;--accent-mid:#B5753F;
+    --ok:#FF7A1F;--ok-soft:#36261C;--warn:#8B8180;--warn-soft:#2B2526;--err:#F2B8B5;
+    --brand:#120E0F;
     color-scheme:dark;
   }
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:400 16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:680px;margin:0 auto;padding:44px 20px 72px}
-header{margin-bottom:28px}
+
+/* Bandeau de marque */
+.brand{background:#FFFFFF;border-bottom:3px solid #EC6408}
+.brand-in{max-width:720px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.brand img{height:52px;width:auto;display:block;flex:none}
+.brand .tag{margin-left:auto;color:#878786;font-size:12px;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+@media (max-width:560px){.brand .tag{display:none}.brand img{height:44px}}
+
+.wrap{max-width:720px;margin:0 auto;padding:36px 20px 72px}
+header{margin-bottom:26px}
 h1{font-size:30px;line-height:1.2;font-weight:600;margin:0;letter-spacing:-.01em}
-.intro{color:var(--muted);margin:12px 0 0;max-width:62ch;white-space:pre-line}
+h1::after{content:"";display:block;width:64px;height:3px;background:var(--accent);margin-top:12px}
+.intro{color:var(--muted);margin:14px 0 0;max-width:62ch;white-space:pre-line}
 h2{font-size:21px;line-height:1.35;font-weight:600;margin:0 0 18px}
-h3{font-size:17px;font-weight:600;margin:30px 0 12px}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:28px}
-@media (max-width:520px){.panel{padding:20px}.wrap{padding-top:28px}h1{font-size:25px}}
+h3{font-size:17px;font-weight:600;margin:30px 0 12px;color:var(--ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+@media (max-width:520px){.panel{padding:20px}.wrap{padding-top:24px}h1{font-size:25px}}
 p{margin:0 0 12px}
 .muted{color:var(--muted)}
 
@@ -41,80 +53,113 @@ p{margin:0 0 12px}
 .lbl{display:block;font-weight:500;margin-bottom:6px}
 .req{color:var(--err)}
 .help{font-size:14px;color:var(--muted);margin:-2px 0 8px}
-input[type=text],input[type=email],input[type=number],select,textarea{
+input[type=text],input[type=email],input[type=password],input[type=number],select,textarea{
   width:100%;font:inherit;color:inherit;background:var(--field);
-  border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
 textarea{min-height:96px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
 .err-msg{color:var(--err);font-size:14px;margin-top:6px}
 
 /* Boutons */
-.btn{font:inherit;font-weight:500;border-radius:8px;padding:11px 20px;cursor:pointer;
+.btn{font:inherit;font-weight:500;border-radius:var(--radius);padding:11px 22px;cursor:pointer;
   border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn:hover:not(:disabled){filter:brightness(1.06)}
 .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px}
+.actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap}
 .actions.end{justify-content:flex-end}
 .send-err{color:var(--err);font-size:14px;margin-top:14px}
 
 /* Questions */
 .progress{margin-bottom:24px}
-.count{font-size:14px;color:var(--muted);margin-bottom:8px}
+.count{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  font-size:14px;color:var(--muted);margin-bottom:8px}
+.chrono{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)}
 .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
 .bar>i{display:block;height:100%;background:var(--accent);transition:width .35s ease}
 fieldset{border:0;margin:0;padding:0;min-width:0}
 legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8px}
 .multi{font-size:14px;color:var(--muted);margin:0 0 16px}
 .opts{display:grid;gap:10px;margin-top:16px}
-.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;
-  padding:12px 14px;cursor:pointer;background:var(--surface)}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 14px;cursor:pointer;background:var(--surface);position:relative}
 .opt:hover{border-color:var(--accent)}
 .opt input{margin:3px 0 0;width:18px;height:18px;flex:none;accent-color:var(--accent)}
 .opt input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt .key{position:absolute;right:10px;top:10px;font-size:11px;color:var(--muted);
+  border:1px solid var(--line);border-radius:3px;padding:0 5px;line-height:17px}
+.opt.on .key{border-color:var(--accent);color:var(--accent)}
+@media (max-width:560px){.opt .key{display:none}}
 .opt.idk{border-style:dashed;color:var(--muted)}
 .opt.idk.on{color:var(--ink)}
+.hint{font-size:13px;color:var(--muted);margin:14px 0 0}
+
+/* Reprise de test */
+.resume{border-left:3px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 var(--radius) var(--radius) 0;padding:16px 18px;margin-bottom:22px}
+.resume p{margin:0 0 10px}
+.resume .actions{margin-top:0}
 
 /* Bilan */
 .result-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 28px;margin-bottom:22px}
-.score{font-size:60px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.score{font-size:60px;font-weight:600;line-height:1;letter-spacing:-.02em;color:var(--accent)}
 .score small{font-size:26px;font-weight:500;margin-left:2px}
 .lvl-name{font-size:20px;font-weight:600}
 .lvl-code{color:var(--muted)}
 .scale{display:grid;gap:4px;margin-bottom:6px}
-.scale span{height:10px;border-radius:3px;background:var(--line)}
-.scale span.past{background:var(--accent-soft)}
+.scale span{height:10px;border-radius:2px;background:var(--line)}
+.scale span.past{background:var(--accent-mid)}
 .scale span.now{background:var(--accent)}
 .scale-labels{display:grid;gap:4px;font-size:13px;color:var(--muted)}
 .scale-labels b{color:var(--ink);font-weight:600}
 .axis{display:grid;grid-template-columns:minmax(0,1fr) 120px 44px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
-.axis:last-child{border-bottom:0}
+.axis:last-of-type{border-bottom:0}
 .axis .track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
-.axis .track i{display:block;height:100%;width:0;background:var(--accent);transition:width .6s ease}
-.axis .track i.hi{background:var(--ok)}
-.axis .track i.lo{background:var(--warn)}
+.axis .track i{display:block;height:100%;width:0;background:var(--accent-mid);transition:width .6s ease}
+.axis .track i.hi{background:var(--accent)}
+.axis .track i.lo{background:#C4B9B9}
 .axis .pct{text-align:right;font-variant-numeric:tabular-nums}
 @media (max-width:520px){.axis{grid-template-columns:minmax(0,1fr) 44px}.axis .track{grid-column:1 / -1;order:3}}
 .items{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.items li{border-radius:8px;padding:12px 14px}
-.items.good li{background:var(--ok-soft)}
-.items.todo li{background:var(--warn-soft)}
-.items .mod{display:block;font-size:14px;margin-top:2px}
+.items li{border-radius:var(--radius);padding:12px 14px;border-left:3px solid transparent}
+.items.good li{background:var(--ok-soft);border-left-color:var(--ok)}
+.items.todo li{background:var(--warn-soft);border-left-color:var(--warn)}
+.items .mod{display:block;font-size:14px;margin-top:2px;color:var(--muted)}
 .topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:16px;font-size:14px;color:var(--muted)}
 .linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .linkbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .fin{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);white-space:pre-line}
+.ref{font-size:13px;color:var(--muted);margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
 .corr{border-top:1px solid var(--line);padding:14px 0}
 .corr p{margin:4px 0}
 .corr .verdict{font-weight:600}
-.corr .verdict.ok{color:var(--ok)}
-.corr .verdict.ko{color:var(--warn)}
+.corr .verdict.ok{color:var(--accent)}
+.corr .verdict.ko{color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Impression du bilan */
+@media print{
+  body{background:#fff}
+  .brand{border-bottom:3px solid #EC6408}
+  .noprint,.topbar,.actions{display:none!important}
+  .wrap{padding:0 0 20px}
+  .panel{border:0;padding:0}
+  .items li{border:1px solid #DED7D5}
+  .axis .track i{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
+<div class="brand">
+  <div class="brand-in">
+    <img src="data:image/png;base64,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" alt="BASSETTI Academy">
+    <span class="tag">Test de positionnement</span>
+  </div>
+</div>
 <div class="wrap">
   <header>
     <h1 id="titre">Test de positionnement IA</h1>
@@ -137,11 +182,11 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
 
   const CONFIG = {
     // Lien prérempli du Google Form (voir le guide, étape 2)
-    lienPrerempli: "https://docs.google.com/forms/d/e/1FAIpQLSeHBd3q0deWjxoNHZeB4HtATbh7BXZS-6Bpd4pZqjiK53LrGg/viewform?usp=pp_url&entry.16379199=nom&entry.1870314045=prenom&entry.797201175=email&entry.1569993303=direction&entry.1000803792=poste&entry.43227533=usage_ia&entry.1036534124=score&entry.388129955=niveau&entry.2053463370=competences&entry.1288250710=points_forts&entry.1488665654=a_travailler&entry.1656505145=detail&entry.1752236776=duree&entry.49609095=identifiant",
+    lienPrerempli: "https://docs.google.com/forms/d/e/1FAIpQLSeHBd3q0deWjxoNHZeB4HtATbh7BXZS-6Bpd4pZqjiK53LrGg/viewform?usp=pp_url&entry.16379199=nom&entry.1870314045=prenom&entry.797201175=email&entry.1569993303=direction&entry.1000803792=poste&entry.43227533=usage_ia&entry.991844377=taches_chronophages&entry.181461913=attentes_ia&entry.1036534124=score&entry.388129955=niveau&entry.695826474=cult&entry.148645666=prat&entry.1272978482=prom&entry.50634032=crit&entry.523890696=secu&entry.1088481530=meti&entry.2053463370=competences&entry.1288250710=points_forts&entry.1488665654=a_travailler&entry.1656505145=detail&entry.1752236776=duree&entry.49609095=identifiant",
 
     titre: "Test de positionnement IA",
-    intro: "Ce test d’une quinzaine de minutes permet d’identifier votre niveau actuel en intelligence artificielle. Il n’y a pas de piège : si vous ne connaissez pas la réponse, choisissez « Je ne sais pas ».",
-    messageFin: "Merci pour votre participation. Ce bilan vous aide à repérer les modules sur lesquels vous concentrer pendant le parcours.",
+    intro: "Ce test dure environ 30 minutes. Il situe votre niveau actuel en intelligence artificielle et recueille votre regard sur vos tâches les plus chronophages.\nIl n’y a pas de piège : si vous ne connaissez pas la réponse, choisissez « Je ne sais pas ». Vos réponses sont enregistrées au fur et à mesure : vous pouvez interrompre et reprendre plus tard.",
+    messageFin: "Merci pour votre participation. Ce bilan vous aide à repérer les modules sur lesquels vous concentrer. Les tâches chronophages que vous avez décrites serviront à construire les cas pratiques de votre direction.",
 
     melangerQuestions: false,   // true : ordre des questions aléatoire
     melangerOptions: false,     // true : ordre des réponses aléatoire
@@ -199,7 +244,11 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     { id: "email", libelle: "Adresse mail professionnelle", type: "email", obligatoire: true },
     { id: "direction", libelle: "Direction", type: "liste", obligatoire: true, options: ["Juridique", "Audit", "Finance", "Autre"] },
     { id: "poste", libelle: "Poste", type: "texte", obligatoire: false },
-    { id: "usage_ia", libelle: "À quelle fréquence utilisez-vous un outil d’IA ?", type: "liste", obligatoire: true, options: ["Jamais", "Occasionnellement", "Chaque semaine", "Tous les jours"] }
+    { id: "usage_ia", libelle: "À quelle fréquence utilisez-vous un outil d’IA ?", type: "liste", obligatoire: true, options: ["Jamais", "Occasionnellement", "Chaque semaine", "Tous les jours"] },
+    { id: "taches_chronophages", libelle: "Quelles tâches vous prennent le plus de temps aujourd’hui ?", type: "texte_long", obligatoire: true,
+      aide: "Décrivez en quelques lignes une ou deux tâches répétitives, manuelles ou chronophages de votre quotidien. Soyez concret : volume, fréquence, temps passé." },
+    { id: "attentes_ia", libelle: "Qu’attendez-vous concrètement de l’IA dans votre métier ?", type: "texte_long", obligatoire: true,
+      aide: "En un paragraphe, expliquez comment vous souhaitez que l’IA apporte de la valeur à votre direction. Ce que vous écrivez ici orientera les cas pratiques de votre parcours." }
   ];
 
   // Compétences évaluées et module conseillé quand le score est faible
@@ -224,6 +273,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
   // Questions. type : "unique" ou "multiple".
   // bonnes : lettre(s) des bonnes réponses, dans l’ordre des options (A = 1re option).
   const QUESTIONS = [
+
+    /* ---------- Culture et compréhension de l’IA ---------- */
     { id: "Q01", competence: "cult", type: "unique",
       question: "Un assistant IA vous répond. Sur quoi s’appuie-t-il, pour l’essentiel ?",
       options: ["Il retrouve la bonne réponse dans une base de réponses validées",
@@ -240,98 +291,267 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
                 "C’est normal : la génération comporte une part d’aléatoire",
                 "La seconde réponse est forcément la meilleure"],
       bonnes: "C",
-      explication: "La variabilité est une propriété du modèle : un résultat obtenu une fois n’est pas reproductible à l’identique." },
+      explication: "La variabilité est une propriété du modèle. Un résultat obtenu une fois n’est donc pas reproductible à l’identique : sur un sujet sensible, un seul essai ne suffit pas." },
 
-    { id: "Q03", competence: "prat", type: "unique",
-      question: "Vous voulez faire résumer un long document. Quelle demande donnera le meilleur résultat ?",
-      options: ["Joindre le document et écrire « résume »",
-                "Joindre le document en précisant le destinataire, la longueur et les points à faire ressortir",
-                "Demander à l’IA de trouver le document sur Internet",
-                "Résumer soi-même puis demander à l’IA de valider"],
+    { id: "Q03", competence: "cult", type: "unique",
+      question: "Dans le vocabulaire de l’IA, une « hallucination » désigne :",
+      options: ["Un refus de répondre",
+                "Une information fausse, énoncée avec assurance",
+                "Un mélange involontaire de deux langues",
+                "Un temps de réponse anormalement long"],
       bonnes: "B",
-      explication: "Le destinataire, la longueur et les points attendus orientent le résumé vers un résultat directement exploitable." },
+      explication: "L’outil produit un texte plausible, pas un texte vérifié. L’assurance du ton ne dit rien de l’exactitude du contenu." },
 
-    { id: "Q04", competence: "prat", type: "unique",
-      question: "Dans un environnement d’entreprise, un assistant IA intégré (Copilot, Gemini…) peut accéder :",
+    { id: "Q04", competence: "cult", type: "unique",
+      question: "Une approche dite « RAG » consiste à :",
+      options: ["Entraîner un modèle sur les données de l’entreprise",
+                "Faire consulter à l’assistant des documents de référence avant qu’il rédige sa réponse",
+                "Réduire le coût d’utilisation en limitant la longueur des réponses",
+                "Comparer automatiquement plusieurs modèles entre eux"],
+      bonnes: "B",
+      explication: "Le modèle va d’abord chercher les passages pertinents dans une base documentaire, puis rédige à partir de ces passages. La réponse est ainsi ancrée sur une source identifiable." },
+
+    { id: "Q05", competence: "cult", type: "unique",
+      question: "La « fenêtre de contexte » d’un modèle correspond à :",
+      options: ["La durée pendant laquelle il mémorise vos échanges d’un jour sur l’autre",
+                "La quantité de texte qu’il peut prendre en compte en une seule fois",
+                "Le nombre d’utilisateurs qu’il peut servir simultanément",
+                "La période couverte par ses données d’entraînement"],
+      bonnes: "B",
+      explication: "Au-delà de cette limite, le début de la conversation ou du document cesse d’être pris en compte. C’est pourquoi un document très long doit être découpé ou résumé par étapes." },
+
+    /* ---------- Pratique des outils au quotidien ---------- */
+    { id: "Q06", competence: "prat", type: "unique",
+      question: "Dans un environnement Microsoft 365, Copilot peut accéder :",
       options: ["À tous les fichiers de l’entreprise, sans restriction",
                 "Uniquement aux documents ouverts pendant la session",
                 "Aux contenus auxquels votre compte a déjà accès, selon vos droits",
                 "À rien d’autre que ce que vous tapez dans la conversation"],
       bonnes: "C",
-      explication: "L’assistant hérite des droits de votre compte : il ne les élargit pas." },
+      explication: "L’assistant hérite des droits du compte, il ne les élargit pas. Il ne crée pas de nouvelle fuite, mais il rend visibles les droits mal configurés." },
 
-    { id: "Q05", competence: "prom", type: "unique",
-      question: "Quelle formulation réduit le plus le risque que l’IA invente une information ?",
-      options: ["« Sois précis et rigoureux »",
-                "« Réponds uniquement à partir du document joint, et écris “non trouvé” si l’information n’y figure pas »",
-                "« Surtout, ne te trompe pas »",
-                "« Donne-moi la vérité exacte »"],
+    { id: "Q07", competence: "prat", type: "unique",
+      question: "Un protocole de connexion standard entre un assistant IA et les outils de l’entreprise (type MCP) sert à :",
+      options: ["Accélérer la vitesse de réponse de l’assistant",
+                "Brancher l’assistant sur des sources et des outils internes selon une norme commune",
+                "Chiffrer les conversations entre l’utilisateur et le modèle",
+                "Traduire automatiquement les réponses dans la langue de l’utilisateur"],
       bonnes: "B",
-      explication: "Ce qui fonctionne : restreindre la source et prévoir explicitement le cas où l’information manque." },
+      explication: "Sans standard, chaque connexion demandait un développement spécifique. Un protocole commun permet de réutiliser un même connecteur pour plusieurs assistants." },
 
-    { id: "Q06", competence: "prom", type: "multiple",
-      question: "Quels éléments rendent une demande à l’IA plus efficace ?",
-      options: ["Préciser le rôle que l’IA doit adopter",
-                "Décrire le format attendu (tableau, nombre de points…)",
-                "Écrire en majuscules pour insister",
-                "Donner le contexte et le destinataire du résultat",
-                "Ajouter des formules de politesse"],
-      bonnes: "A,B,D",
-      explication: "Rôle, contexte et format structurent la demande. Les majuscules et la politesse ne changent pas la qualité du résultat." },
+    { id: "Q08", competence: "prat", type: "unique",
+      question: "Qu’est-ce qui distingue une « compétence packagée » d’un simple prompt ?",
+      options: ["Elle est plus longue à écrire",
+                "Elle est écrite une fois, validée, puis appliquée de la même manière par toute l’équipe",
+                "Elle fonctionne sans connexion internet",
+                "Elle donne systématiquement une réponse plus courte"],
+      bonnes: "B",
+      explication: "Un prompt dépend de celui qui le rédige. Une compétence packagée transforme une méthode individuelle en procédure homogène à l’échelle d’une direction." },
 
-    { id: "Q07", competence: "crit", type: "unique",
-      question: "Parmi ces tâches, laquelle un assistant IA généraliste réussit-il le moins bien ?",
+    { id: "Q09", competence: "prat", type: "unique",
+      question: "Parmi ces tâches, laquelle un assistant IA généraliste réussit-il le moins bien aujourd’hui ?",
       options: ["Résumer un document de quarante pages",
                 "Réécrire un texte pour un autre destinataire",
                 "Additionner huit cents montants et garantir le total au centime",
                 "Proposer le plan d’une note de synthèse"],
       bonnes: "C",
-      explication: "Le calcul exact sur un grand volume n’est pas garanti par un modèle de langage : utilisez un tableur." },
+      explication: "Le calcul exact sur un grand volume n’est pas garanti. Le total se calcule dans le tableur ; l’IA sert à orienter l’analyse, pas à produire le chiffre." },
 
-    { id: "Q08", competence: "crit", type: "unique",
-      question: "L’IA cite un chiffre précis et une source à l’appui de sa réponse. Votre premier réflexe ?",
-      options: ["L’utiliser : une source est citée",
-                "Vérifier le chiffre dans la source d’origine avant tout usage",
-                "Demander à l’IA si elle est sûre d’elle",
-                "Reposer la question pour comparer"],
+    { id: "Q10", competence: "prat", type: "unique",
+      question: "Vous mettez en place un agent qui traite automatiquement les courriels entrants. Quel réglage est le plus sûr ?",
+      options: ["L’agent répond et envoie directement, pour gagner du temps",
+                "L’agent prépare un brouillon de réponse, que vous relisez et envoyez vous-même",
+                "L’agent transfère tous les courriels à votre responsable",
+                "L’agent supprime les courriels qu’il juge sans intérêt"],
       bonnes: "B",
-      explication: "Les sources et chiffres inventés ont l’apparence exacte d’une information authentique : seule la source d’origine fait foi." },
+      explication: "Un envoi automatique engage l’entreprise sans contrôle humain. Le brouillon soumis à validation conserve le gain de temps en gardant la décision du côté de l’utilisateur." },
 
-    { id: "Q09", competence: "secu", type: "unique",
+    /* ---------- Ingénierie du prompt ---------- */
+    { id: "Q11", competence: "prom", type: "unique",
+      question: "Parmi ces quatre demandes, laquelle produira le résultat le plus exploitable ?",
+      options: ["« Fais-moi un résumé du contrat »",
+                "« Résume »",
+                "« Tu es juriste d’entreprise. À partir du contrat joint, liste les obligations à notre charge, avec pour chacune l’article de référence et l’échéance. Présente sous forme de tableau. Si une échéance n’est pas mentionnée, écris non précisé. »",
+                "« Peux-tu me résumer ce contrat s’il te plaît, merci d’avance »"],
+      bonnes: "C",
+      explication: "Rôle, source, contenu attendu, format de sortie et traitement des informations manquantes : chaque élément retire une part d’interprétation à l’outil." },
+
+    { id: "Q12", competence: "prom", type: "unique",
+      question: "Que faut-il ajouter en priorité à « Analyse ce budget et dis-moi ce qui ne va pas » ?",
+      options: ["Une formule de politesse",
+                "Le contexte, le format de sortie attendu et le seuil à partir duquel un écart compte",
+                "Le nom de l’outil utilisé",
+                "Rien : la demande est déjà suffisante"],
+      bonnes: "B",
+      explication: "Sans seuil de significativité, l’outil commente tout avec la même emphase. Le seuil est ce qui transforme une liste en analyse." },
+
+    { id: "Q13", competence: "prom", type: "multiple",
+      question: "Quels éléments structurent une demande professionnelle efficace ? (plusieurs réponses)",
+      options: ["Le rôle que l’assistant doit adopter",
+                "La tâche précise à réaliser",
+                "Le contexte et la source à utiliser",
+                "Le nombre de mots exact de la réponse",
+                "Les contraintes et le format de sortie attendu"],
+      bonnes: "A,B,C,E",
+      explication: "Rôle, tâche, contexte et contraintes forment le socle. Imposer un nombre de mots exact n’apporte rien et dégrade souvent la qualité." },
+
+    { id: "Q14", competence: "prom", type: "unique",
+      question: "Fournir à l’assistant deux ou trois exemples du résultat attendu avant de lui confier la tâche, cela s’appelle :",
+      options: ["Le grounding",
+                "Le few-shot",
+                "Le fine-tuning",
+                "Le chaînage"],
+      bonnes: "B",
+      explication: "Donner des exemples du format visé est souvent plus efficace que de le décrire longuement. C’est la façon la plus simple d’obtenir une sortie homogène." },
+
+    { id: "Q15", competence: "prom", type: "unique",
+      question: "Sur une tâche complexe, demander à l’assistant de procéder étape par étape :",
+      options: ["N’a aucun effet sur la qualité de la réponse",
+                "Améliore la fiabilité, car le raisonnement devient explicite et vérifiable",
+                "Est déconseillé, car la réponse devient trop longue",
+                "Oblige à payer un abonnement supérieur"],
+      bonnes: "B",
+      explication: "Découper la tâche rend chaque étape contrôlable. C’est aussi ce qui permet de repérer où le raisonnement dérape, plutôt que de rejeter la réponse en bloc." },
+
+    /* ---------- Esprit critique et vérification ---------- */
+    { id: "Q16", competence: "crit", type: "unique",
+      question: "L’assistant cite un article de loi à l’appui de son analyse. Votre premier réflexe ?",
+      options: ["L’intégrer : l’outil est connecté aux sources officielles",
+                "Vérifier la référence dans le texte officiel avant tout usage",
+                "Demander à l’assistant s’il est certain de lui",
+                "Reformuler la question autrement pour comparer"],
+      bonnes: "B",
+      explication: "Les références juridiques inventées sont la forme d’hallucination la plus fréquente, et la plus coûteuse : elles ont l’apparence exacte d’une citation authentique." },
+
+    { id: "Q17", competence: "crit", type: "unique",
+      question: "Vous demandez à l’assistant de confirmer que sa réponse est exacte. Que vaut cette confirmation ?",
+      options: ["Beaucoup : l’outil sait évaluer sa propre fiabilité",
+                "Peu : il génère une confirmation aussi plausible que la réponse initiale",
+                "Cela dépend de la version utilisée",
+                "Elle est fiable dès lors qu’il répond « oui, j’en suis certain »"],
+      bonnes: "B",
+      explication: "Demander à l’outil s’il a raison produit une nouvelle génération de texte, pas une vérification. Le contrôle vient toujours de l’extérieur." },
+
+    { id: "Q18", competence: "crit", type: "unique",
+      question: "Un collègue vous transmet une synthèse produite avec l’IA. Quel est le signal d’alerte le plus fiable ?",
+      options: ["La longueur inhabituelle du texte",
+                "Des chiffres très précis dont aucune source n’est indiquée",
+                "Un style impersonnel",
+                "L’absence totale de fautes"],
+      bonnes: "B",
+      explication: "La précision sans traçabilité est le marqueur le plus fiable d’un chiffre inventé." },
+
+    { id: "Q19", competence: "crit", type: "unique",
+      question: "Quelle formulation réduit le plus le risque d’invention ?",
+      options: ["« Sois précis et rigoureux »",
+                "« Réponds uniquement à partir du document joint, et écris non trouvé si l’information n’y figure pas »",
+                "« Surtout, ne te trompe pas »",
+                "« Donne-moi la vérité exacte »"],
+      bonnes: "B",
+      explication: "Les injonctions morales n’ont aucun effet. Ce qui fonctionne : restreindre la source et ouvrir une porte de sortie explicite quand l’information manque." },
+
+    { id: "Q20", competence: "crit", type: "unique",
+      question: "L’IA repère une écriture inhabituelle dans un grand livre. Ce signalement constitue :",
+      options: ["Un constat définitif",
+                "Une piste à documenter et à corroborer",
+                "Une preuve suffisante pour conclure",
+                "Une erreur avérée"],
+      bonnes: "B",
+      explication: "Entre la détection et le constat, il y a la collecte de l’élément probant. C’est ce qui distingue un travail professionnel d’un signalement automatique." },
+
+    /* ---------- Sécurité et conformité ---------- */
+    { id: "Q21", competence: "secu", type: "unique",
+      question: "Vous devez analyser un contrat contenant des données nominatives. Quel est le bon réflexe ?",
+      options: ["Le coller dans un outil public gratuit, c’est plus rapide",
+                "Utiliser l’environnement d’entreprise et respecter les règles internes de traitement",
+                "Le retaper de mémoire en retirant les noms",
+                "Le transmettre à un collègue mieux équipé"],
+      bonnes: "B",
+      explication: "Le choix de l’environnement précède toujours le choix de la méthode. Un bon prompt dans le mauvais outil reste une faute." },
+
+    { id: "Q22", competence: "secu", type: "unique",
       question: "Un document produit avec l’aide de l’IA, puis signé par vous, engage :",
       options: ["L’éditeur de l’outil",
                 "Personne : c’est une production automatique",
                 "Vous et votre entreprise, comme tout document que vous signez",
                 "La direction informatique"],
       bonnes: "C",
-      explication: "La responsabilité ne se délègue pas à un outil : c’est le principe de l’humain dans la boucle." },
+      explication: "La responsabilité ne se délègue pas à un outil. C’est le fondement de la validation humaine systématique." },
 
-    { id: "Q10", competence: "secu", type: "unique",
-      question: "Vous devez analyser un document contenant des données confidentielles. Quel est le bon réflexe ?",
-      options: ["Le coller dans un outil public gratuit, c’est plus rapide",
-                "Utiliser l’outil validé par l’entreprise et respecter les règles internes",
-                "Le retaper en retirant quelques noms",
-                "Le transmettre à un collègue mieux équipé"],
-      bonnes: "B",
-      explication: "Le choix de l’outil précède le choix de la méthode : un bon prompt dans le mauvais outil reste une faute." },
+    { id: "Q23", competence: "secu", type: "unique",
+      question: "Une « injection de prompt », c’est :",
+      options: ["Une instruction dissimulée dans un document ou un courriel, qui détourne le comportement de l’assistant",
+                "Une technique pour écrire des demandes plus vite",
+                "Un module payant supplémentaire",
+                "Une saturation du service"],
+      bonnes: "A",
+      explication: "Un document reçu de l’extérieur peut contenir des instructions cachées. C’est pourquoi un assistant branché sur votre messagerie doit être encadré." },
 
-    { id: "Q11", competence: "meti", type: "unique",
-      question: "Pour transformer un compte rendu de réunion en liste d’actions exploitable, que faut-il préciser à l’IA ?",
-      options: ["Simplement « résume ce compte rendu »",
-                "Les colonnes attendues : action, responsable, échéance",
-                "Le nombre de participants",
-                "La durée de la réunion"],
+    { id: "Q24", competence: "secu", type: "unique",
+      question: "Laquelle de ces pratiques présente le risque le plus élevé ?",
+      options: ["Faire résumer une note interne dans l’environnement d’entreprise",
+                "Coller un fichier de paie dans un chatbot grand public « pour tester »",
+                "Demander le plan d’un rapport",
+                "Faire reformuler un courriel"],
       bonnes: "B",
-      explication: "Un résumé produit du texte ; une liste d’actions exige une structure définie à l’avance." },
+      explication: "Les données de paie sont des données personnelles sensibles. Les déposer dans un service grand public constitue un transfert non maîtrisé." },
 
-    { id: "Q12", competence: "meti", type: "unique",
-      question: "Quel est le principal risque d’un usage non encadré de l’IA dans votre métier ?",
-      options: ["Un gain de temps décevant",
-                "Une analyse fausse mais convaincante, utilisée sans vérification",
-                "Le coût des licences",
-                "La résistance des équipes au changement"],
+    { id: "Q25", competence: "secu", type: "multiple",
+      question: "Avant de soumettre un document du Groupe à un assistant IA, que vérifiez-vous ? (plusieurs réponses)",
+      options: ["Que l’outil utilisé est celui autorisé par l’entreprise",
+                "Que le document ne contient pas de données personnelles ou confidentielles non couvertes",
+                "Que la longueur du document est inférieure à dix pages",
+                "Que vous êtes habilité à accéder à ce document",
+                "Que le document est rédigé en français"],
+      bonnes: "A,B,D",
+      explication: "L’outil, la nature des données et vos habilitations. La longueur et la langue ne sont pas des critères de conformité." },
+
+    /* ---------- Application au métier : identifier et arbitrer ---------- */
+    { id: "Q26", competence: "meti", type: "unique",
+      question: "Parmi ces quatre tâches, laquelle se prête le mieux à une assistance par l’IA ?",
+      options: ["Arrêter les comptes de l’exercice",
+                "Extraire les obligations et les échéances de trente contrats fournisseurs",
+                "Décider du montant d’un investissement",
+                "Négocier un délai de paiement avec un client"],
       bonnes: "B",
-      explication: "Le danger n’est pas l’échec visible de l’outil, mais un résultat erroné bien rédigé qui passe les relectures." }
+      explication: "Volume documentaire élevé, règle d’extraction stable, résultat vérifiable : ce sont les trois marqueurs d’une tâche bien adaptée. Les trois autres relèvent de la décision ou de l’engagement." },
+
+    { id: "Q27", competence: "meti", type: "unique",
+      question: "Pour décider si une tâche mérite d’être outillée avec l’IA, quel critère est le plus pertinent ?",
+      options: ["Le nombre de personnes qui la trouvent pénible",
+                "Sa fréquence, le temps qu’elle consomme et la stabilité de la règle qu’elle suit",
+                "Son ancienneté dans les procédures de l’entreprise",
+                "Le niveau hiérarchique de celui qui la réalise"],
+      bonnes: "B",
+      explication: "Une tâche rare ou dont la règle change en permanence rapporte peu, même si elle est pénible. Le gain se calcule : fréquence multipliée par temps passé." },
+
+    { id: "Q28", competence: "meti", type: "multiple",
+      question: "Lesquelles de ces tâches sont de bons candidats à une assistance par l’IA ? (plusieurs réponses)",
+      options: ["Synthétiser un rapport de soixante pages en une note d’une page",
+                "Comparer deux versions d’un contrat et lister les écarts",
+                "Signer l’attestation remise au commissaire aux comptes",
+                "Rapprocher deux listes et faire ressortir les lignes divergentes",
+                "Arbitrer entre deux fournisseurs"],
+      bonnes: "A,B,D",
+      explication: "Synthèse, comparaison et rapprochement sont des travaux de traitement. Signer et arbitrer sont des actes de décision, qui restent entiers." },
+
+    { id: "Q29", competence: "meti", type: "unique",
+      question: "Vous hésitez entre un assistant généraliste et un outil spécialisé de votre métier. Quel critère est décisif ?",
+      options: ["Le prix de la licence",
+                "La nature du besoin : raisonner sur vos propres documents, ou interroger une base de connaissances métier tenue à jour",
+                "La notoriété de l’éditeur",
+                "La langue de l’interface"],
+      bonnes: "B",
+      explication: "Un assistant généraliste excelle sur vos documents. Un outil spécialisé apporte une base métier maintenue et des références vérifiables. Le besoin décide, pas l’outil." },
+
+    { id: "Q30", competence: "meti", type: "unique",
+      question: "Vous avez identifié un usage prometteur dans votre direction. Quelle est la première étape avant de le déployer ?",
+      options: ["Former immédiatement toute l’équipe",
+                "Mesurer le temps actuellement consacré à cette tâche, pour pouvoir comparer ensuite",
+                "Acheter des licences supplémentaires",
+                "Rédiger une procédure complète"],
+      bonnes: "B",
+      explication: "Sans mesure de départ, aucun gain ne pourra être démontré. C’est la différence entre un ressenti et un résultat opposable." }
   ];
 
   /* =====================================================================
@@ -345,6 +565,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
   let utilisateur = null;
   const CLE_SESSION = "t0.session";
   const cleIdentite = id => "t0.identite." + id;
+  const cleReprise = id => "t0.reprise." + id;
+  let chronoTimer = null;
   let identite = {};
   let ordre = [];
   let reponses = {};
@@ -359,7 +581,52 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     if (txt != null) n.textContent = txt;
     return n;
   }
-  function vider() { app.innerHTML = ""; window.scrollTo(0, 0); }
+  function vider() {
+    if (chronoTimer) { clearInterval(chronoTimer); chronoTimer = null; }
+    app.innerHTML = "";
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- Reprise d'un test interrompu ---------- */
+  function sauvegarderProgression() {
+    if (!utilisateur || !enCours) return;
+    try {
+      localStorage.setItem(cleReprise(utilisateur), JSON.stringify({
+        v: 1, ordre: ordre.map(q => q.id), reponses: reponses, idx: idx, debut: debut, quand: Date.now()
+      }));
+    } catch (e) { /* stockage indisponible */ }
+  }
+  function effacerProgression() {
+    try { localStorage.removeItem(cleReprise(utilisateur)); } catch (e) { /* stockage indisponible */ }
+  }
+  function lireProgression() {
+    try {
+      const d = JSON.parse(localStorage.getItem(cleReprise(utilisateur)) || "null");
+      if (!d || d.v !== 1 || !Array.isArray(d.ordre) || !d.ordre.length) return null;
+      if (Date.now() - (d.quand || 0) > 7 * 24 * 3600 * 1000) return null;
+      if (!d.ordre.every(id => QUESTIONS.some(q => q.id === id))) return null;
+      return d;
+    } catch (e) { return null; }
+  }
+  function construire(ids) {
+    return ids.map(id => {
+      const q = QUESTIONS.find(x => x.id === id);
+      return {
+        id: q.id,
+        type: q.type === "multiple" ? "multiple" : "unique",
+        question: q.question,
+        options: q.options.slice(0, LETTRES.length).map((t, i) => ({ lettre: LETTRES[i], texte: t }))
+      };
+    });
+  }
+  function reprendre(d) {
+    ordre = construire(d.ordre);
+    reponses = (d.reponses && typeof d.reponses === "object") ? d.reponses : {};
+    idx = Math.min(Math.max(0, d.idx | 0), ordre.length - 1);
+    debut = d.debut || Date.now();
+    enCours = true;
+    ecranQuestion();
+  }
   function normaliser(s) {
     return String(s == null ? "" : s).trim().toLowerCase()
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -405,6 +672,13 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     formulaire = lireFormulaire(CONFIG.lienPrerempli);
     if (!formulaire) {
       message("Configuration incomplète", "Collez le lien prérempli de votre Google Form dans CONFIG.lienPrerempli, en haut du script de index.html.");
+      return;
+    }
+    const absents = CHAMPS.filter(c => !formulaire.map[normaliser(c.id)]).map(c => c.id);
+    if (absents.length) {
+      message("Configuration incomplète",
+        "Ces informations n’ont pas de question correspondante dans le Google Form : " + absents.join(", ") +
+        ". Ajoutez une question par information dans le formulaire, régénérez le lien prérempli en y saisissant exactement ces mots-clés comme valeurs, puis recollez-le dans CONFIG.lienPrerempli. Sans cela, les réponses ne seraient pas enregistrées.");
       return;
     }
     const valides = UTILISATEURS.filter(u => /^[a-f0-9]{64}$/.test(String(u.empreinte)));
@@ -503,7 +777,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
   }
 
   function deconnecter() {
-    if (enCours && !window.confirm("Votre test en cours sera perdu. Voulez-vous vraiment vous déconnecter ?")) return;
+    if (enCours && !window.confirm("Votre test en cours sera mis en pause. Vous pourrez le reprendre à la prochaine connexion, sur ce même navigateur. Continuer ?")) return;
+    if (enCours) sauvegarderProgression();
     try { sessionStorage.removeItem(CLE_SESSION); } catch (e) { /* stockage indisponible */ }
     utilisateur = null;
     identite = {};
@@ -520,7 +795,39 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       if (sauve && typeof sauve === "object") identite = sauve;
     } catch (e) { /* stockage indisponible */ }
     afficherSession();
+    const d = lireProgression();
+    if (d) { ecranReprise(d); return; }
     ecranIdentite();
+  }
+
+  /* ---------- Écran de reprise ---------- */
+  function ecranReprise(d) {
+    vider();
+    afficherIntro(false);
+    const p = el("div", "panel");
+    p.appendChild(el("h2", null, "Vous avez un test en cours"));
+    const n = QUESTIONS.length;
+    const fait = Object.keys(d.reponses || {}).length;
+    const box = el("div", "resume");
+    box.appendChild(el("p", null,
+      "Votre test précédent s'est interrompu à la question " + Math.min((d.idx | 0) + 1, n) +
+      " sur " + n + " (" + fait + " réponse" + (fait > 1 ? "s" : "") + " enregistrée" + (fait > 1 ? "s" : "") + ")."));
+    const a = el("div", "actions");
+    const bRe = el("button", "btn", "Reprendre où je me suis arrêté");
+    bRe.type = "button";
+    bRe.addEventListener("click", () => reprendre(d));
+    const bNew = el("button", "btn ghost", "Recommencer depuis le début");
+    bNew.type = "button";
+    bNew.addEventListener("click", () => {
+      if (!window.confirm("Vos réponses enregistrées seront effacées. Continuer ?")) return;
+      effacerProgression();
+      ecranIdentite();
+    });
+    a.appendChild(bRe);
+    a.appendChild(bNew);
+    box.appendChild(a);
+    p.appendChild(box);
+    app.appendChild(p);
   }
 
   /* ---------- Écran 1 : informations du candidat ---------- */
@@ -627,6 +934,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     idx = 0;
     debut = Date.now();
     enCours = true;
+    effacerProgression();
+    sauvegarderProgression();
     ecranQuestion();
   }
 
@@ -639,7 +948,17 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     const p = el("div", "panel");
 
     const pr = el("div", "progress");
-    pr.appendChild(el("div", "count", "Question " + (idx + 1) + " sur " + n));
+    const cnt = el("div", "count");
+    cnt.appendChild(el("span", null, "Question " + (idx + 1) + " sur " + n));
+    const chrono = el("span", "chrono", "");
+    cnt.appendChild(chrono);
+    pr.appendChild(cnt);
+    function majChrono() {
+      const s = Math.max(0, Math.floor((Date.now() - debut) / 1000));
+      chrono.textContent = Math.floor(s / 60) + " min " + String(s % 60).padStart(2, "0") + " s";
+    }
+    majChrono();
+    chronoTimer = setInterval(majChrono, 1000);
     const bar = el("div", "bar");
     bar.setAttribute("role", "progressbar");
     bar.setAttribute("aria-valuemin", "0");
@@ -668,8 +987,12 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       inp.value = o.valeur;
       lb.appendChild(inp);
       lb.appendChild(el("span", null, o.texte));
+      const touche = o.idk ? "0" : String(labels.length + 1);
+      const k = el("span", "key", touche);
+      k.setAttribute("aria-hidden", "true");
+      lb.appendChild(k);
       opts.appendChild(lb);
-      labels.push({ lb, inp });
+      labels.push({ lb, inp, touche });
     });
     fs.appendChild(opts);
     p.appendChild(fs);
@@ -708,15 +1031,43 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
           else sel = sel.filter(v => v !== inp.value);
         }
         reponses[q.id] = sel;
+        sauvegarderProgression();
         synchroniser();
       });
     });
     synchroniser();
 
     suiv.addEventListener("click", () => {
-      if (!dernier) { idx++; ecranQuestion(); return; }
+      if (!dernier) { idx++; sauvegarderProgression(); ecranQuestion(); return; }
       envoyer(suiv, err);
     });
+
+    p.appendChild(el("p", "hint",
+      "Raccourcis : touches " + (CONFIG.jeNeSaisPas ? "1 à " + (labels.length - 1) + " ou 0" : "1 à " + labels.length) +
+      " pour répondre, Entrée pour continuer, flèche gauche pour revenir."));
+
+    function clavier(e) {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      const t = e.target;
+      if (t && (t.tagName === "INPUT" && t.type === "text" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+      if (e.key === "Enter") {
+        if (!suiv.disabled) { e.preventDefault(); suiv.click(); }
+        return;
+      }
+      if (e.key === "ArrowLeft" && !prec.disabled) { e.preventDefault(); prec.click(); return; }
+      const cible = labels.filter(l => l.touche === e.key)[0];
+      if (cible) {
+        e.preventDefault();
+        if (type === "radio") { cible.inp.checked = true; }
+        else { cible.inp.checked = !cible.inp.checked; }
+        cible.inp.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+    document.addEventListener("keydown", clavier);
+    const stop = new MutationObserver(() => {
+      if (!document.body.contains(p)) { document.removeEventListener("keydown", clavier); stop.disconnect(); }
+    });
+    stop.observe(app, { childList: true });
 
     app.appendChild(p);
     requestAnimationFrame(() => requestAnimationFrame(() => { fill.style.width = ((idx + 1) / n * 100) + "%"; }));
@@ -811,6 +1162,7 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       .then(() => {
         envoiEnCours = false;
         enCours = false;
+        effacerProgression();
         ecranBilan(r);
       })
       .catch(() => {
@@ -903,6 +1255,21 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     }
 
     if (CONFIG.messageFin) p.appendChild(el("p", "fin", CONFIG.messageFin));
+
+    const ref = el("p", "ref");
+    const d = new Date();
+    const deuxCh = x => String(x).padStart(2, "0");
+    ref.textContent = "Passé le " + deuxCh(d.getDate()) + "/" + deuxCh(d.getMonth() + 1) + "/" + d.getFullYear() +
+      " à " + deuxCh(d.getHours()) + "h" + deuxCh(d.getMinutes()) +
+      " · Durée : " + r.duree + " min · Référence : " + utilisateur;
+    p.appendChild(ref);
+
+    const aFin = el("div", "actions end noprint");
+    const bImp = el("button", "btn ghost", "Imprimer ou enregistrer en PDF");
+    bImp.type = "button";
+    bImp.addEventListener("click", () => window.print());
+    aFin.appendChild(bImp);
+    p.appendChild(aFin);
 
     app.appendChild(p);
     requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach(([f, s]) => { f.style.width = s + "%"; })));
