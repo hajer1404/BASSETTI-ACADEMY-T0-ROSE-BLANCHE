@@ -57,6 +57,7 @@ input[type=text],input[type=email],input[type=password],input[type=number],selec
   width:100%;font:inherit;color:inherit;background:var(--field);
   border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px}
 textarea{min-height:96px;resize:vertical}
+select:disabled{opacity:1;color:var(--ink);background:var(--bg);cursor:default}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
 .err-msg{color:var(--err);font-size:14px;margin-top:6px}
@@ -196,54 +197,48 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     seuilFaible: 50             // % en dessous duquel une compétence est à travailler
   };
 
-  // Comptes autorisés. Ne jamais écrire de mot de passe ici : seulement l’empreinte
-  // produite par le fichier generateur_empreintes.html (conservé sur votre poste).
-  const UTILISATEURS = [
-        { identifiant: "user1", empreinte: "75eebba184dac515a5e2dfb555ca2c9ca336dfbfd7bac6bd4f18a2a8c5f4e3ce" },
-    { identifiant: "user2", empreinte: "cd6e8b7616a88061b3be1bffa8aabc5360d946f0b9b4e7930b1ec7765536fa7f" },
-    { identifiant: "user3", empreinte: "b8a222c6a9b668a3f805fabce7131d119ed94c837ca70b8128af6f4e6504ace5" },
-    { identifiant: "user4", empreinte: "967db1c2257c804009ada919b538efe79cc4455e624631a88f3c8b77c6d34de0" },
-    { identifiant: "user5", empreinte: "0ede8935be01f40ac06b06dd665afea3592529393ead5381708c293cb388f229" },
-    { identifiant: "user6", empreinte: "b725fce849da01df9acf482969b5de585998a60019b5ebaffd3890377d79b3a5" },
-    { identifiant: "user7", empreinte: "d39c2bc853ca545d02f884f880a056dab7ec42842992865fedf2f7fa51085312" },
-    { identifiant: "user8", empreinte: "254a115c52ae2cfa6d6870a06ea096b9f51e93f28d3ad87e0c9055aefd34eee1" },
-    { identifiant: "user9", empreinte: "bd805941e0048a8128620da9eebf879501228aa80f06880f362bb3269e3b69c2" },
-    { identifiant: "user10", empreinte: "48446e4a8c077ed28f53deee9a400b1b10041a217d00e3655a256a46e56f3254" },
-    { identifiant: "user11", empreinte: "4a63df9f7fb7ae41a974b1d17d5475af69afab13b1813337eb2a4c0d0b1c841a" },
-    { identifiant: "user12", empreinte: "d9d07c3bf4e9c6732fab118efdf5069be72d4870c811ee3613881cb383a044f8" },
-    { identifiant: "user13", empreinte: "8c4d3ac9f75adf995c1227b17e8d80f57809648a316dffa9a1e6026f98b1ec1a" },
-    { identifiant: "user14", empreinte: "e3af8c7a91fd1ecdbcdd54a8512b9882496ba8fa35a91766d2a92476d3c1a546" },
-    { identifiant: "user15", empreinte: "88880b3d45e94001cdaa191fb07e38d9f0d4713c2549dad09640eb4b6bad4e7a" },
-    { identifiant: "user16", empreinte: "3e4ef3c272a2bae3e95c6420324588dee969a45531ec550a08c3470d0d9895aa" },
-    { identifiant: "user17", empreinte: "9f5aa139121374bfeb384f48984a6a3a915a56af920994e6b47b091fee0dcf2e" },
-    { identifiant: "user18", empreinte: "03cf01d67251435002f6e929118bd9a032f19ebd335e4dc3ca5fab4aa64a7961" },
-    { identifiant: "user19", empreinte: "319822b45793dbc446e46c96094d0df4b8f2b44d6a457e92ec4458fca47173c7" },
-    { identifiant: "user20", empreinte: "9afb596775fc5bd0c284a379b5c26d128394587a2b0b5239b1f6508344811745" },
-    { identifiant: "user21", empreinte: "285ae0a83e93989004d8d6e56199a97b67862506eeaac3b28d722ecf2d62be23" },
-    { identifiant: "user22", empreinte: "37489fc93de9a6834dc716e13ac7769ceba5919a5a39fff1ba615f06d69be561" },
-    { identifiant: "user23", empreinte: "949d4311df77aeef8e28236b822472269ed6f387896ac020d36ec0c2e414f811" },
-    { identifiant: "user24", empreinte: "76998b5292883f1634f219178d39030f15193fcbd8f2b092395079f29947ea49" },
-    { identifiant: "user25", empreinte: "fa6e47147e6da35b2b434f3bcc1f3ab72651189f7ac91578437f21a1ebdbac78" },
-    { identifiant: "user26", empreinte: "5b9b07bcc7759db02966314d2f59105a61993e81f0547620e32cb2cfe0aa3499" },
-    { identifiant: "user27", empreinte: "03c881f7dbf183bdf87b9ec7786dda4b14a905483be936e8ad9b6018872f64f7" },
-    { identifiant: "user28", empreinte: "d9a91dc6aa3e87f198f11de978937d95dabfa6b8f622d14221bbe2d2efe8371c" },
-    { identifiant: "user29", empreinte: "bac93af1d918c0a456215aa6df0386f84eb83e53a52385cdaeda098339a3754e" },
-    { identifiant: "user30", empreinte: "1fe65aef7a50fcf97d025d0362521eb88f9706a86578bdb146cde076b028dd44" },
-    { identifiant: "user31", empreinte: "e3dddde89597f6b4369a61de2f028bcc25ea84055e1904aff1d29e40262035d2" },
-    { identifiant: "user32", empreinte: "557f85550315ae21d7070cc6b9d0ac8d31341134d5f1158ef585391c079faeb9" },
-    { identifiant: "user33", empreinte: "88b40a528521d648c259332cd5cf003f3d3761712ba7c8c3608cdaa5b2f6480d" },
-    { identifiant: "user34", empreinte: "4775bed3700febb7cba1b2cf978afbf9f104a9ce33a11a23c5a7adee6430a6b8" },
-    { identifiant: "user35", empreinte: "ca32f56f28f79e81e715ca27b285085ed384024bece2ed1b94031bf7b93bfa2c" }
+  // Mot de passe commun à tous les participants (pour le moment).
+  // Ne jamais écrire le mot de passe ici : seulement son empreinte, produite par
+  // generateur_empreintes.html avec l’identifiant ci-dessous.
+  const COMPTE_COMMUN = {
+    identifiant: "test",
+    empreinte: "25deaac135aa323dc666c2d5c4869b2d76f7bae6b404cb835260c974707dc675"
+  };
+
+  // Participants (liste transmise par Rose Blanche). L’adresse e-mail sert d’identifiant.
+  // Pour donner plus tard un mot de passe personnel à quelqu’un : ajouter
+  // empreinte: "…" sur sa ligne (générée avec son adresse e-mail comme identifiant).
+  const PARTICIPANTS = [
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Salem", nom: "ZAOUALI", poste: "Directeur Audit interne Groupe", email: "salem.zaouali@warda.tn" },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Mohamed", nom: "HADJ AMMAR", poste: "Responsable Audit interne site Nord", email: "mohamed.hadjammar@rose-blanche.com" },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Ahmed", nom: "KAMMOUN", poste: "Auditeur Interne Groupe", email: "ahmed.kammoun@rose-blanche.com" },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Asma", nom: "EL MEKKI", poste: "Responsable Audit Interne site Sousse", email: "asma.elmekki@rose-blanche.com" },
+    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Omar", nom: "GRATI", poste: "Responsable Audit Interne Site de Sfax", email: "grati.omar@rose-blanche.com" },
+    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Ahmed", nom: "DJEMAL", poste: "Assistant audit", email: "ahmed.jemal@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "MCSR", prenom: "Hatem", nom: "NATTAT", poste: "Directeur Juridique Groupe", email: "hatem.nattat@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Anis", nom: "BENSLIMENE", poste: "Responsable Juridique", email: "anis.benslimen@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Sami Zied", nom: "ERNEZ", poste: "Juriste", email: "samizied.ernaz@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Mohamed Montassar", nom: "SKANDRANI", poste: "Responsable Juridique et Contentieux Site Tunis", email: "montassar.skandarani@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Najah", nom: "JAMAA", poste: "Chef de Service Juridique Groupe", email: "najah.djemaa@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Raouf", nom: "AHMED", poste: "Responsable Juridique et Contentieux Groupe", email: "raouf.ahmed@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Seif", nom: "DINARI", poste: "Juriste", email: "seif.dinari@rose-blanche.com" },
+    { equipe: "Equipe Juridique", filiale: "STPA", prenom: "Lassaad", nom: "KAMMOUN", poste: "Directeur Département Juridique Sfax", email: "lassaad.kammoun@stpa.diari.tn" },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Ahmed Mohamed", nom: "FERJANI", poste: "Responsable Risque Client Groupe", email: "ahmed.ferjani@warda.tn" },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Marwa", nom: "KHEDER", poste: "Responsable Comptabilité et Finance Groupe", email: "marwa.khedher@rose-blanche.com" },
+    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mouna", nom: "HELAOUI", poste: "Responsable Comptabilité et Finance Groupe", email: "mouna.helaoui@rose-blanche.com" },
+    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mohamed", nom: "BEN AMMAR", poste: "Directeur Comptabilité et Finance Groupe", email: "m.benammar@warda.tn" },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Salem", nom: "BETTAIEB", poste: "Responsable Comptabilité et Finance Groupe", email: "s.bettaieb@warda.tn" },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Ahmed", nom: "GAAIED", poste: "Directeur Organisation et Gestion des Risques Groupe", email: "a.gaaied@warda.tn" },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Sami", nom: "BEJAOUI", poste: "Directeur Process et Contrôle Interne Groupe", email: "sami.bejaoui@rose-blanche.com" },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Rim", nom: "BEN ABDESSLEM", poste: "Chargée Administrative Groupe", email: "rim.benabdesslem@rose-blanche.com" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Hajer", nom: "ZAGA", poste: "Formatrice", email: "hajer.zaga@bassetti-group.com" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Stéphane", nom: "HURY", poste: "Formateur", email: "stephane.hury@bassetti.fr" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Nader", nom: "VAKIL", poste: "Suivi du parcours", email: "nader.vakil@bassetti-group.com" }
   ];
 
-  // Informations demandées au candidat.
+  // Informations demandées au candidat (son identité vient de PARTICIPANTS).
   // type : "texte", "email", "liste", "nombre" ou "texte_long"
   const CHAMPS = [
-    { id: "nom", libelle: "Nom", type: "texte", obligatoire: true },
-    { id: "prenom", libelle: "Prénom", type: "texte", obligatoire: true },
-    { id: "email", libelle: "Adresse mail professionnelle", type: "email", obligatoire: true },
-    { id: "direction", libelle: "Direction", type: "liste", obligatoire: true, options: ["Juridique", "Audit", "Finance", "Autre"] },
-    { id: "poste", libelle: "Poste", type: "texte", obligatoire: false },
     { id: "usage_ia", libelle: "À quelle fréquence utilisez-vous un outil d’IA ?", type: "liste", obligatoire: true, options: ["Jamais", "Occasionnellement", "Chaque semaine", "Tous les jours"] },
     { id: "taches_chronophages", libelle: "Quelles tâches vous prennent le plus de temps aujourd’hui ?", type: "texte_long", obligatoire: true,
       aide: "Décrivez en quelques lignes une ou deux tâches répétitives, manuelles ou chronophages de votre quotidien. Soyez concret : volume, fréquence, temps passé." },
@@ -575,6 +570,23 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
   let enCours = false;
   let envoiEnCours = false;
 
+  // Identité envoyée au Google Form, tirée de la liste des participants
+  const CHAMPS_IDENTITE = ["nom", "prenom", "email", "direction", "poste"];
+  function participant(email) {
+    const m = String(email || "").trim().toLowerCase();
+    return PARTICIPANTS.find(p => p.email.toLowerCase() === m) || null;
+  }
+  function nomComplet(p) { return p.prenom + " " + p.nom; }
+  function identiteDe(p) {
+    const avecFiliale = formulaire && formulaire.map[normaliser("filiale")];
+    const v = {
+      nom: p.nom, prenom: p.prenom, email: p.email.toLowerCase(), poste: p.poste,
+      direction: avecFiliale ? p.equipe : p.equipe + " (" + p.filiale + ")"
+    };
+    if (avecFiliale) v.filiale = p.filiale;
+    return v;
+  }
+
   function el(tag, cls, txt) {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -674,22 +686,21 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       message("Configuration incomplète", "Collez le lien prérempli de votre Google Form dans CONFIG.lienPrerempli, en haut du script de index.html.");
       return;
     }
-    const absents = CHAMPS.filter(c => !formulaire.map[normaliser(c.id)]).map(c => c.id);
+    const absents = CHAMPS_IDENTITE.concat(CHAMPS.map(c => c.id)).filter(id => !formulaire.map[normaliser(id)]);
     if (absents.length) {
       message("Configuration incomplète",
         "Ces informations n’ont pas de question correspondante dans le Google Form : " + absents.join(", ") +
         ". Ajoutez une question par information dans le formulaire, régénérez le lien prérempli en y saisissant exactement ces mots-clés comme valeurs, puis recollez-le dans CONFIG.lienPrerempli. Sans cela, les réponses ne seraient pas enregistrées.");
       return;
     }
-    const valides = UTILISATEURS.filter(u => /^[a-f0-9]{64}$/.test(String(u.empreinte)));
-    if (!valides.length) {
-      message("Configuration incomplète", "Ajoutez au moins un compte dans UTILISATEURS, avec l’empreinte produite par generateur_empreintes.html.");
+    if (!PARTICIPANTS.length || !/^[a-f0-9]{64}$/.test(String(COMPTE_COMMUN.empreinte))) {
+      message("Configuration incomplète", "Renseignez PARTICIPANTS et l’empreinte de COMPTE_COMMUN (produite par generateur_empreintes.html).");
       return;
     }
     document.getElementById("deconnexion").addEventListener("click", deconnecter);
     let enregistre = null;
     try { enregistre = sessionStorage.getItem(CLE_SESSION); } catch (e) { /* stockage indisponible */ }
-    if (enregistre && UTILISATEURS.some(u => u.identifiant.toLowerCase() === enregistre)) {
+    if (enregistre && participant(enregistre)) {
       ouvrirSession(enregistre);
     } else {
       ecranConnexion();
@@ -711,22 +722,42 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     form.noValidate = true;
     form.appendChild(el("h2", null, "Connexion"));
 
-    const champs = [
-      { id: "login_id", libelle: "Identifiant", type: "text", auto: "username" },
-      { id: "login_mdp", libelle: "Mot de passe", type: "password", auto: "current-password" }
-    ];
-    champs.forEach(c => {
-      const f = el("div", "field");
-      const lb = el("label", "lbl", c.libelle);
-      lb.htmlFor = c.id;
-      const input = el("input");
-      input.type = c.type;
-      input.id = c.id;
-      input.autocomplete = c.auto;
-      f.appendChild(lb);
-      f.appendChild(input);
-      form.appendChild(f);
+    // Adresse e-mail : menu déroulant, groupé par équipe
+    const fId = el("div", "field");
+    const lbId = el("label", "lbl", "Adresse e-mail");
+    lbId.htmlFor = "login_id";
+    fId.appendChild(lbId);
+    fId.appendChild(el("p", "help", "Choisissez votre adresse dans la liste."));
+    const sel = el("select");
+    sel.id = "login_id";
+    const vide = el("option", null, "Choisir…");
+    vide.value = "";
+    sel.appendChild(vide);
+    const equipes = [];
+    PARTICIPANTS.forEach(p => { if (!equipes.includes(p.equipe)) equipes.push(p.equipe); });
+    equipes.forEach(eq => {
+      const g = el("optgroup");
+      g.label = eq;
+      PARTICIPANTS.filter(p => p.equipe === eq).forEach(p => {
+        const op = el("option", null, p.email.toLowerCase());
+        op.value = p.email.toLowerCase();
+        g.appendChild(op);
+      });
+      sel.appendChild(g);
     });
+    fId.appendChild(sel);
+    form.appendChild(fId);
+
+    const fMdp = el("div", "field");
+    const lbMdp = el("label", "lbl", "Mot de passe");
+    lbMdp.htmlFor = "login_mdp";
+    const mdpInput = el("input");
+    mdpInput.type = "password";
+    mdpInput.id = "login_mdp";
+    mdpInput.autocomplete = "current-password";
+    fMdp.appendChild(lbMdp);
+    fMdp.appendChild(mdpInput);
+    form.appendChild(fMdp);
     const err = el("p", "err-msg");
     err.hidden = true;
     err.setAttribute("role", "alert");
@@ -743,16 +774,18 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       const id = form.querySelector("#login_id").value.trim().toLowerCase();
       const mdp = form.querySelector("#login_mdp").value;
       if (!id || !mdp) {
-        err.textContent = "Saisissez votre identifiant et votre mot de passe.";
+        err.textContent = "Choisissez votre adresse e-mail et saisissez le mot de passe.";
         err.hidden = false;
         return;
       }
       b.disabled = true;
-      empreinte(id, mdp).then(h => {
-        const compte = UTILISATEURS.find(u => u.identifiant.toLowerCase() === id && u.empreinte === h);
-        if (!compte) {
+      const p = participant(id);
+      const perso = p && /^[a-f0-9]{64}$/.test(String(p.empreinte || ""));
+      const attendu = perso ? p.empreinte : COMPTE_COMMUN.empreinte;
+      empreinte(perso ? id : COMPTE_COMMUN.identifiant, mdp).then(h => {
+        if (!p || h !== attendu) {
           b.disabled = false;
-          err.textContent = "Identifiant ou mot de passe incorrect.";
+          err.textContent = "Mot de passe incorrect.";
           err.hidden = false;
           form.querySelector("#login_mdp").value = "";
           form.querySelector("#login_mdp").focus();
@@ -773,7 +806,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
   function afficherSession() {
     const bar = document.getElementById("session");
     bar.hidden = !utilisateur;
-    document.getElementById("session-nom").textContent = utilisateur ? "Connecté en tant que " + utilisateur : "";
+    const p = participant(utilisateur);
+    document.getElementById("session-nom").textContent = utilisateur ? "Connecté en tant que " + (p ? nomComplet(p) : utilisateur) : "";
   }
 
   function deconnecter() {
@@ -794,6 +828,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       const sauve = JSON.parse(localStorage.getItem(cleIdentite(id)) || "null");
       if (sauve && typeof sauve === "object") identite = sauve;
     } catch (e) { /* stockage indisponible */ }
+    const p = participant(id);
+    if (p) Object.assign(identite, identiteDe(p));
     afficherSession();
     const d = lireProgression();
     if (d) { ecranReprise(d); return; }
@@ -837,6 +873,40 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     const form = el("form", "panel");
     form.noValidate = true;
     form.appendChild(el("h2", null, "Vos informations"));
+
+    const moi = participant(utilisateur);
+    if (moi) {
+      form.appendChild(el("p", "help", "Ces informations viennent de la liste des participants : vous n’avez rien à saisir."));
+      [
+        { id: "equipe", libelle: "Équipe", val: p => p.equipe },
+        { id: "filiale", libelle: "Filiale", val: p => p.filiale },
+        { id: "nom_prenom", libelle: "Nom et prénom", val: p => nomComplet(p) },
+        { id: "poste", libelle: "Poste", val: p => p.poste },
+        { id: "email", libelle: "Adresse e-mail", val: p => p.email.toLowerCase() }
+      ].forEach(c => {
+        const f = el("div", "field");
+        const lb = el("label", "lbl", c.libelle);
+        lb.htmlFor = "profil_" + c.id;
+        f.appendChild(lb);
+        const s = el("select");
+        s.id = "profil_" + c.id;
+        s.disabled = true;
+        const vals = [];
+        PARTICIPANTS.forEach(p => { const v = c.val(p); if (!vals.includes(v)) vals.push(v); });
+        vals.forEach(v => { const op = el("option", null, v); op.value = v; s.appendChild(op); });
+        s.value = c.val(moi);
+        f.appendChild(s);
+        form.appendChild(f);
+      });
+      const pasMoi = el("p", "help");
+      pasMoi.appendChild(document.createTextNode("Ce n’est pas vous ? "));
+      const lien = el("button", "linkbtn", "Se déconnecter");
+      lien.type = "button";
+      lien.addEventListener("click", deconnecter);
+      pasMoi.appendChild(lien);
+      form.appendChild(pasMoi);
+      form.appendChild(el("h3", null, "Votre usage de l’IA"));
+    }
 
     CHAMPS.forEach(c => {
       const f = el("div", "field");
@@ -914,7 +984,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       valeurs[c.id] = c.type === "email" ? v.toLowerCase() : v;
     });
     if (premier) { premier.focus(); return false; }
-    identite = valeurs;
+    const moi = participant(utilisateur);
+    identite = Object.assign(valeurs, moi ? identiteDe(moi) : {});
     try { localStorage.setItem(cleIdentite(utilisateur), JSON.stringify(valeurs)); } catch (e) { /* stockage indisponible */ }
     return true;
   }
