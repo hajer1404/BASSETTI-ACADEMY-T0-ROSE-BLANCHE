@@ -586,6 +586,21 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     if (avecFiliale) v.filiale = p.filiale;
     return v;
   }
+  // Identity built from the editable profile lists (equipe, filiale, nom_prenom, poste, email)
+  function identiteDepuisProfil(v) {
+    const avecFiliale = formulaire && formulaire.map[normaliser("filiale")];
+    const pers = PARTICIPANTS.find(p => nomComplet(p) === v.nom_prenom);
+    const morceaux = String(v.nom_prenom || "").trim().split(/\s+/);
+    const r = {
+      prenom: pers ? pers.prenom : morceaux[0] || "",
+      nom: pers ? pers.nom : morceaux.slice(1).join(" "),
+      email: String(v.email || "").toLowerCase(), poste: v.poste,
+      direction: avecFiliale ? v.equipe : v.equipe + " (" + v.filiale + ")",
+      profil: v
+    };
+    if (avecFiliale) r.filiale = v.filiale;
+    return r;
+  }
 
   function el(tag, cls, txt) {
     const n = document.createElement(tag);
@@ -829,7 +844,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       if (sauve && typeof sauve === "object") identite = sauve;
     } catch (e) { /* stockage indisponible */ }
     const p = participant(id);
-    if (p) Object.assign(identite, identiteDe(p));
+    // Values the candidate already edited take priority over the participant list
+    if (p) identite = Object.assign(identiteDe(p), identite);
     afficherSession();
     const d = lireProgression();
     if (d) { ecranReprise(d); return; }
@@ -876,7 +892,8 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
 
     const moi = participant(utilisateur);
     if (moi) {
-      form.appendChild(el("p", "help", "Ces informations viennent de la liste des participants : vous n’avez rien à saisir."));
+      form.appendChild(el("p", "help", "Ces informations viennent de la liste des participants. Vérifiez-les et modifiez-les si besoin."));
+      const profil = identite.profil || {};
       [
         { id: "equipe", libelle: "Équipe", val: p => p.equipe },
         { id: "filiale", libelle: "Filiale", val: p => p.filiale },
@@ -890,11 +907,12 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
         f.appendChild(lb);
         const s = el("select");
         s.id = "profil_" + c.id;
-        s.disabled = true;
+        s.name = c.id;
+        s.dataset.profil = c.id;
         const vals = [];
         PARTICIPANTS.forEach(p => { const v = c.val(p); if (!vals.includes(v)) vals.push(v); });
         vals.forEach(v => { const op = el("option", null, v); op.value = v; s.appendChild(op); });
-        s.value = c.val(moi);
+        s.value = vals.includes(profil[c.id]) ? profil[c.id] : c.val(moi);
         f.appendChild(s);
         form.appendChild(f);
       });
@@ -985,7 +1003,14 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     });
     if (premier) { premier.focus(); return false; }
     const moi = participant(utilisateur);
-    identite = Object.assign(valeurs, moi ? identiteDe(moi) : {});
+    const selects = form.querySelectorAll("select[data-profil]");
+    let ident = moi ? identiteDe(moi) : {};
+    if (moi && selects.length) {
+      const profil = {};
+      selects.forEach(s => { profil[s.dataset.profil] = s.value; });
+      ident = identiteDepuisProfil(profil);
+    }
+    identite = Object.assign(valeurs, ident);
     try { localStorage.setItem(cleIdentite(utilisateur), JSON.stringify(valeurs)); } catch (e) { /* stockage indisponible */ }
     return true;
   }
