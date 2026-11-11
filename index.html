@@ -197,43 +197,45 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
     seuilFaible: 50             // % en dessous duquel une compétence est à travailler
   };
 
-  // Mot de passe commun à tous les participants (pour le moment).
+  // Mot de passe commun, identique pour tous les participants (en plus du mot de passe personnel).
   // Ne jamais écrire le mot de passe ici : seulement son empreinte, produite par
   // generateur_empreintes.html avec l’identifiant ci-dessous.
+  // accepte: false  → seul le mot de passe personnel permet de se connecter.
   const COMPTE_COMMUN = {
     identifiant: "test",
-    empreinte: "25deaac135aa323dc666c2d5c4869b2d76f7bae6b404cb835260c974707dc675"
+    empreinte: "25deaac135aa323dc666c2d5c4869b2d76f7bae6b404cb835260c974707dc675",
+    accepte: true
   };
 
-  // Participants (liste transmise par Rose Blanche). L’adresse e-mail sert d’identifiant.
-  // Pour donner plus tard un mot de passe personnel à quelqu’un : ajouter
-  // empreinte: "…" sur sa ligne (générée avec son adresse e-mail comme identifiant).
+  // Participants (liste transmise par Rose Blanche). L’adresse e-mail est choisie à la connexion.
+  // empreinte = mot de passe personnel, généré avec "prénom nom" en minuscules comme
+  // identifiant (ex. "hajer zaga"). Ne jamais écrire le mot de passe lui-même ici.
   const PARTICIPANTS = [
-    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Salem", nom: "ZAOUALI", poste: "Directeur Audit interne Groupe", email: "salem.zaouali@warda.tn" },
-    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Mohamed", nom: "HADJ AMMAR", poste: "Responsable Audit interne site Nord", email: "mohamed.hadjammar@rose-blanche.com" },
-    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Ahmed", nom: "KAMMOUN", poste: "Auditeur Interne Groupe", email: "ahmed.kammoun@rose-blanche.com" },
-    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Asma", nom: "EL MEKKI", poste: "Responsable Audit Interne site Sousse", email: "asma.elmekki@rose-blanche.com" },
-    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Omar", nom: "GRATI", poste: "Responsable Audit Interne Site de Sfax", email: "grati.omar@rose-blanche.com" },
-    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Ahmed", nom: "DJEMAL", poste: "Assistant audit", email: "ahmed.jemal@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "MCSR", prenom: "Hatem", nom: "NATTAT", poste: "Directeur Juridique Groupe", email: "hatem.nattat@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Anis", nom: "BENSLIMENE", poste: "Responsable Juridique", email: "anis.benslimen@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Sami Zied", nom: "ERNEZ", poste: "Juriste", email: "samizied.ernaz@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Mohamed Montassar", nom: "SKANDRANI", poste: "Responsable Juridique et Contentieux Site Tunis", email: "montassar.skandarani@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Najah", nom: "JAMAA", poste: "Chef de Service Juridique Groupe", email: "najah.djemaa@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Raouf", nom: "AHMED", poste: "Responsable Juridique et Contentieux Groupe", email: "raouf.ahmed@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Seif", nom: "DINARI", poste: "Juriste", email: "seif.dinari@rose-blanche.com" },
-    { equipe: "Equipe Juridique", filiale: "STPA", prenom: "Lassaad", nom: "KAMMOUN", poste: "Directeur Département Juridique Sfax", email: "lassaad.kammoun@stpa.diari.tn" },
-    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Ahmed Mohamed", nom: "FERJANI", poste: "Responsable Risque Client Groupe", email: "ahmed.ferjani@warda.tn" },
-    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Marwa", nom: "KHEDER", poste: "Responsable Comptabilité et Finance Groupe", email: "marwa.khedher@rose-blanche.com" },
-    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mouna", nom: "HELAOUI", poste: "Responsable Comptabilité et Finance Groupe", email: "mouna.helaoui@rose-blanche.com" },
-    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mohamed", nom: "BEN AMMAR", poste: "Directeur Comptabilité et Finance Groupe", email: "m.benammar@warda.tn" },
-    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Salem", nom: "BETTAIEB", poste: "Responsable Comptabilité et Finance Groupe", email: "s.bettaieb@warda.tn" },
-    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Ahmed", nom: "GAAIED", poste: "Directeur Organisation et Gestion des Risques Groupe", email: "a.gaaied@warda.tn" },
-    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Sami", nom: "BEJAOUI", poste: "Directeur Process et Contrôle Interne Groupe", email: "sami.bejaoui@rose-blanche.com" },
-    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Rim", nom: "BEN ABDESSLEM", poste: "Chargée Administrative Groupe", email: "rim.benabdesslem@rose-blanche.com" },
-    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Hajer", nom: "ZAGA", poste: "Formatrice", email: "hajer.zaga@bassetti-group.com" },
-    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Stéphane", nom: "HURY", poste: "Formateur", email: "stephane.hury@bassetti.fr" },
-    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Nader", nom: "VAKIL", poste: "Suivi du parcours", email: "nader.vakil@bassetti-group.com" }
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Salem", nom: "ZAOUALI", poste: "Directeur Audit interne Groupe", email: "salem.zaouali@warda.tn", empreinte: "b55acbe02a261f6f0ea1b636c90ba00f15454561a85863c1af9314b4910a7a36" },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Mohamed", nom: "HADJ AMMAR", poste: "Responsable Audit interne site Nord", email: "mohamed.hadjammar@rose-blanche.com", empreinte: "f571fe15b2b087edd15287a803562afc9520e240d53e8b7eb418d32cd51d53e0" },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Ahmed", nom: "KAMMOUN", poste: "Auditeur Interne Groupe", email: "ahmed.kammoun@rose-blanche.com", empreinte: "97e4b794a413dfc12b6ce63a16c4a9b778f84eba1ab4de6752466ba465d540e6" },
+    { equipe: "Equipe Audit Interne", filiale: "IXIA", prenom: "Asma", nom: "EL MEKKI", poste: "Responsable Audit Interne site Sousse", email: "asma.elmekki@rose-blanche.com", empreinte: "669e0b761ec2654d3ee8150cf5d7a5cad3d8db6159c5990754860b7c62570087" },
+    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Omar", nom: "GRATI", poste: "Responsable Audit Interne Site de Sfax", email: "grati.omar@rose-blanche.com", empreinte: "d53c47b4c723be8cfc453340fa5e1157675b999e653c73372f94c81f5aa3898f" },
+    { equipe: "Equipe Audit Interne", filiale: "STPA", prenom: "Ahmed", nom: "DJEMAL", poste: "Assistant audit", email: "ahmed.jemal@rose-blanche.com", empreinte: "a39a4e15e2b665a232e81215dfb806c6445929a754f50287ac080d33893197df" },
+    { equipe: "Equipe Juridique", filiale: "MCSR", prenom: "Hatem", nom: "NATTAT", poste: "Directeur Juridique Groupe", email: "hatem.nattat@rose-blanche.com", empreinte: "808d16a544272f20bbe2752caae74e47e2a69ccab53618f99d1023a90bc75c41" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Anis", nom: "BENSLIMENE", poste: "Responsable Juridique", email: "anis.benslimen@rose-blanche.com", empreinte: "6dac4fb0818b9b4feea6f84f1d4cf697d2723f113b7a7fba1a3bebc89821744b" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Sami Zied", nom: "ERNEZ", poste: "Juriste", email: "samizied.ernaz@rose-blanche.com", empreinte: "82fd8f247a3b374b06336371c603378daadd72aa4b16562a96ff41fc113671b6" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Mohamed Montassar", nom: "SKANDRANI", poste: "Responsable Juridique et Contentieux Site Tunis", email: "montassar.skandarani@rose-blanche.com", empreinte: "486418bbf1510e798c978ce53ca46ffebc67c286e76e566092c3d050243f96a2" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Najah", nom: "JAMAA", poste: "Chef de Service Juridique Groupe", email: "najah.djemaa@rose-blanche.com", empreinte: "ee0d38c76f81c5469602083cfbda027e3aab210e3a00f23858caff55e32e5406" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Raouf", nom: "AHMED", poste: "Responsable Juridique et Contentieux Groupe", email: "raouf.ahmed@rose-blanche.com", empreinte: "fca18412c066b496a034f9cb93864b3224586d748c1516af8320dbe982590983" },
+    { equipe: "Equipe Juridique", filiale: "IXIA", prenom: "Seif", nom: "DINARI", poste: "Juriste", email: "seif.dinari@rose-blanche.com", empreinte: "d488a26cb5db35ec02f8f33f23bc1bbbdf8b562fc15cbdd7a983a658cd149eae" },
+    { equipe: "Equipe Juridique", filiale: "STPA", prenom: "Lassaad", nom: "KAMMOUN", poste: "Directeur Département Juridique Sfax", email: "lassaad.kammoun@stpa.diari.tn", empreinte: "6ee4b1967213d53e167634e27f17bada80432976446b293d2ec56345a7b69ed0" },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Ahmed Mohamed", nom: "FERJANI", poste: "Responsable Risque Client Groupe", email: "ahmed.ferjani@warda.tn", empreinte: "e5f15a1c724afd2d163fd28f45f84d84980f77d9202da5d474551b09a5cc3291" },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Marwa", nom: "KHEDER", poste: "Responsable Comptabilité et Finance Groupe", email: "marwa.khedher@rose-blanche.com", empreinte: "1ce8888c283896e5b1dce26864bfab90418005b65c453512bd4dc92b87799dfd" },
+    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mouna", nom: "HELAOUI", poste: "Responsable Comptabilité et Finance Groupe", email: "mouna.helaoui@rose-blanche.com", empreinte: "554a1e41d2c5bc527dfad7ef595896aaffaca9bd2a16fc8a6d037f7f6b6543b9" },
+    { equipe: "Equipe Finance", filiale: "SOFIN", prenom: "Mohamed", nom: "BEN AMMAR", poste: "Directeur Comptabilité et Finance Groupe", email: "m.benammar@warda.tn", empreinte: "84227e60ce5cc9fb9ee7190029b8bda8ac07b3154eac6949d01c5f15fb5d703b" },
+    { equipe: "Equipe Finance", filiale: "IXIA", prenom: "Salem", nom: "BETTAIEB", poste: "Responsable Comptabilité et Finance Groupe", email: "s.bettaieb@warda.tn", empreinte: "105f52e5e9d161975d08572659d1f4c28de33c9e48739d0da137e595fd39508c" },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Ahmed", nom: "GAAIED", poste: "Directeur Organisation et Gestion des Risques Groupe", email: "a.gaaied@warda.tn", empreinte: "5add22aa156194c1e2adda17bfd37b71a7be9183b5f3860ed2db2305a226ff72" },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Sami", nom: "BEJAOUI", poste: "Directeur Process et Contrôle Interne Groupe", email: "sami.bejaoui@rose-blanche.com", empreinte: "04ca5fcb4f3c78b98ac6a1c064ec2be62a3c5bbeec6fcba63630c296c6f837ca" },
+    { equipe: "Equipe Organisation et Gestion des risques", filiale: "IXIA", prenom: "Rim", nom: "BEN ABDESSLEM", poste: "Chargée Administrative Groupe", email: "rim.benabdesslem@rose-blanche.com", empreinte: "bf37b7e97f37ac41a6f3bb2b804ff486e1ac886f70624076197322c887381c6b" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Hajer", nom: "ZAGA", poste: "Formatrice", email: "hajer.zaga@bassetti-group.com", empreinte: "e60935e9e1eaaeff99862967d771313841f9383fd4df7740aa65599835a2123e" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Stéphane", nom: "HURY", poste: "Formateur", email: "stephane.hury@bassetti.fr", empreinte: "300dfeddfb8b57a458b9eb4a675d7a6c680631c99355433861a2b2e37685b03f" },
+    { equipe: "Equipe Bassetti Academy", filiale: "BASSETTI", prenom: "Nader", nom: "VAKIL", poste: "Suivi du parcours", email: "nader.vakil@bassetti-group.com", empreinte: "f7b886369757a8836e997047f018585409d7d0cf5d417265b7bda3d8b4fa7eec" }
   ];
 
   // Informations demandées au candidat (son identité vient de PARTICIPANTS).
@@ -796,9 +798,13 @@ legend{font-size:20px;line-height:1.4;font-weight:600;padding:0;margin-bottom:8p
       b.disabled = true;
       const p = participant(id);
       const perso = p && /^[a-f0-9]{64}$/.test(String(p.empreinte || ""));
-      const attendu = perso ? p.empreinte : COMPTE_COMMUN.empreinte;
-      empreinte(perso ? id : COMPTE_COMMUN.identifiant, mdp).then(h => {
-        if (!p || h !== attendu) {
+      // Personal hash uses "prenom nom" in lowercase as identifier; the shared password stays accepted as a fallback
+      Promise.all([
+        perso ? empreinte(nomComplet(p).toLowerCase(), mdp) : Promise.resolve(""),
+        COMPTE_COMMUN.accepte ? empreinte(COMPTE_COMMUN.identifiant, mdp) : Promise.resolve("")
+      ]).then(([hPerso, hCommun]) => {
+        const valide = (perso && hPerso === p.empreinte) || (COMPTE_COMMUN.accepte && hCommun === COMPTE_COMMUN.empreinte);
+        if (!p || !valide) {
           b.disabled = false;
           err.textContent = "Mot de passe incorrect.";
           err.hidden = false;
